@@ -63,10 +63,12 @@ npm start
 
 ## 📚 文档
 
-- **[部署指南](DOCKER-DEPLOY.md)** - Docker 部署完整文档
-- **[运维手册](OPERATIONS.md)** - 日常运维、监控、故障排查
-- **[开发文档](AGENTS.md)** - AI Agent 协作指南
-- **[变更日志](CHANGELOG.md)** - 版本更新记录
+- **[📖 文档中心](docs/README.md)** - 完整技术文档导航
+- **[🚀 部署指南](docs/DOCKER-DEPLOY.md)** - Docker 部署完整文档
+- **[🛠️ 运维手册](docs/OPERATIONS.md)** - 日常运维、监控、故障排查
+- **[⚡ 快速参考](docs/QUICK-REFERENCE.md)** - 常用命令速查
+- **[📝 变更日志](docs/CHANGELOG.md)** - 版本更新记录
+- **[🤖 开发指南](AGENTS.md)** - AI Agent 协作指南
 
 ## 🔧 核心功能
 

@@ -9,8 +9,9 @@
 ### 🚀 快速开始
 
 - **[项目说明](../README.md)** - 项目介绍、特性、快速开始
-- **[快速参考](../QUICK-REFERENCE.md)** - 常用命令速查表
-- **[变更日志](../CHANGELOG.md)** - 版本更新记录
+- **[文档总览](./DOCUMENTATION.md)** - 完整文档索引和导航
+- **[快速参考](./QUICK-REFERENCE.md)** - 常用命令速查表
+- **[变更日志](./CHANGELOG.md)** - 版本更新记录
 
 ### 🏗️ 架构设计
 
@@ -32,8 +33,8 @@
 
 ### 🐳 部署运维
 
-- **[Docker 部署](../DOCKER-DEPLOY.md)** - 容器化部署完整指南
-- **[运维手册](../OPERATIONS.md)** - 日常运维、监控、故障排查
+- **[Docker 部署](./DOCKER-DEPLOY.md)** - 容器化部署完整指南
+- **[运维手册](./OPERATIONS.md)** - 日常运维、监控、故障排查
 - **[安全加固](./security.md)** - HTTPS、防火墙、权限管理
 - **[监控告警](./monitoring.md)** - 健康检查、日志分析、告警配置
 
