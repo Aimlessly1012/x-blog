@@ -9,8 +9,17 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const user = session.user as any
+    if (!user.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const db = getDb()
-    const users = db.prepare('SELECT * FROM users ORDER BY created_at DESC').all()
+    const users = db.prepare(`
+      SELECT id, github_id, google_id, name, email, image, status, is_admin, created_at, updated_at 
+      FROM users 
+      ORDER BY created_at DESC
+    `).all()
     
     return NextResponse.json({ data: users })
   } catch (error) {
@@ -26,6 +35,11 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const user = session.user as any
+    if (!user.isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const body = await request.json()
     const { userId, status } = body
 
@@ -38,10 +52,19 @@ export async function PATCH(request: Request) {
     }
 
     const db = getDb()
-    db.prepare('UPDATE users SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE google_id = ?')
-      .run(status, userId)
+    
+    // 检查用户是否存在
+    const existingUser = db.prepare('SELECT id FROM users WHERE id = ?').get(userId)
+    if (!existingUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
 
-    return NextResponse.json({ success: true })
+    // 更新用户状态
+    const now = new Date().toISOString()
+    db.prepare('UPDATE users SET status = ?, updated_at = ? WHERE id = ?')
+      .run(status, now, userId)
+
+    return NextResponse.json({ success: true, message: 'User status updated' })
   } catch (error) {
     console.error('Failed to update user:', error)
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 })

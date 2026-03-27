@@ -5,9 +5,12 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import { CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
 
 interface User {
-  google_id: string
+  id: string
+  github_id: string | null
+  google_id: string | null
   name: string | null
   email: string | null
   image: string | null
@@ -58,7 +61,8 @@ export default function UsersManagementPage() {
       if (response.ok) {
         fetchUsers()
       } else {
-        alert('更新失败')
+        const error = await response.json()
+        alert(error.error || '更新失败')
       }
     } catch (error) {
       console.error('Failed to update user:', error)
@@ -71,7 +75,7 @@ export default function UsersManagementPage() {
       <div className="min-h-screen bg-gray-950">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-gray-400">加载中...</div>
+          <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     )
@@ -91,8 +95,10 @@ export default function UsersManagementPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-100 mb-2">用户管理</h1>
-          <p className="text-gray-500">管理用户访问权限</p>
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 mb-2">
+            用户管理
+          </h1>
+          <p className="text-gray-500">管理用户访问权限和账户状态</p>
         </div>
 
         {/* 待审核 */}
@@ -102,17 +108,20 @@ export default function UsersManagementPage() {
             待审核 ({pendingUsers.length})
           </h2>
           {pendingUsers.length === 0 ? (
-            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 text-center text-gray-500">
-              暂无待审核用户
+            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-8 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
+                <ClockIcon className="w-8 h-8 text-gray-600" />
+              </div>
+              <p className="text-gray-500">暂无待审核用户</p>
             </div>
           ) : (
             <div className="space-y-3">
               {pendingUsers.map(user => (
                 <UserCard
-                  key={user.google_id}
+                  key={user.id}
                   user={user}
-                  onApprove={() => updateUserStatus(user.google_id, 'approved')}
-                  onReject={() => updateUserStatus(user.google_id, 'rejected')}
+                  onApprove={() => updateUserStatus(user.id, 'approved')}
+                  onReject={() => updateUserStatus(user.id, 'rejected')}
                 />
               ))}
             </div>
@@ -126,16 +135,19 @@ export default function UsersManagementPage() {
             已批准 ({approvedUsers.length})
           </h2>
           {approvedUsers.length === 0 ? (
-            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 text-center text-gray-500">
-              暂无已批准用户
+            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-8 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
+                <CheckCircleIcon className="w-8 h-8 text-gray-600" />
+              </div>
+              <p className="text-gray-500">暂无已批准用户</p>
             </div>
           ) : (
             <div className="space-y-3">
               {approvedUsers.map(user => (
                 <UserCard
-                  key={user.google_id}
+                  key={user.id}
                   user={user}
-                  onRevoke={() => updateUserStatus(user.google_id, 'rejected')}
+                  onRevoke={() => updateUserStatus(user.id, 'rejected')}
                   showRevoke
                 />
               ))}
@@ -150,16 +162,19 @@ export default function UsersManagementPage() {
             已拒绝 ({rejectedUsers.length})
           </h2>
           {rejectedUsers.length === 0 ? (
-            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 text-center text-gray-500">
-              暂无已拒绝用户
+            <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-8 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-800 mb-4">
+                <XCircleIcon className="w-8 h-8 text-gray-600" />
+              </div>
+              <p className="text-gray-500">暂无已拒绝用户</p>
             </div>
           ) : (
             <div className="space-y-3">
               {rejectedUsers.map(user => (
                 <UserCard
-                  key={user.google_id}
+                  key={user.id}
                   user={user}
-                  onApprove={() => updateUserStatus(user.google_id, 'approved')}
+                  onApprove={() => updateUserStatus(user.id, 'approved')}
                   showApprove
                 />
               ))}
@@ -186,30 +201,59 @@ function UserCard({
   showRevoke?: boolean
   showApprove?: boolean
 }) {
+  const authProvider = user.github_id ? 'GitHub' : user.google_id ? 'Google' : '未知'
+  const authId = user.github_id || user.google_id || '无'
+
   return (
-    <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-5 hover:border-gray-700 transition-colors">
+    <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-5 hover:border-gray-700 transition-all group">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {user.image && (
-            <img
+          {user.image ? (
+            <Image
               src={user.image}
               alt={user.name || 'User'}
-              className="w-12 h-12 rounded-full ring-2 ring-gray-700"
+              width={48}
+              height={48}
+              className="rounded-full ring-2 ring-gray-700 group-hover:ring-pink-500/50 transition-all"
             />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center ring-2 ring-gray-700">
+              <span className="text-white font-semibold">
+                {user.name?.charAt(0).toUpperCase() || '?'}
+              </span>
+            </div>
           )}
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-1">
               <h3 className="font-semibold text-gray-100">{user.name || '未知用户'}</h3>
               {user.is_admin === 1 && (
-                <span className="px-2 py-0.5 bg-pink-500/20 text-pink-400 rounded text-xs font-semibold">
+                <span className="px-2 py-0.5 bg-pink-500/20 text-pink-400 rounded-full text-xs font-semibold border border-pink-500/30">
                   管理员
                 </span>
               )}
+              <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                authProvider === 'GitHub' 
+                  ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+              }`}>
+                {authProvider}
+              </span>
             </div>
-            <p className="text-sm text-gray-500">{user.email}</p>
-            <p className="text-xs text-gray-600 mt-1">
-              注册时间: {new Date(user.created_at).toLocaleString('zh-CN')}
-            </p>
+            <p className="text-sm text-gray-400">{user.email || '无邮箱'}</p>
+            <div className="flex items-center gap-3 mt-2">
+              <p className="text-xs text-gray-600">
+                ID: <span className="font-mono">{user.id}</span>
+              </p>
+              <p className="text-xs text-gray-600">
+                注册: {new Date(user.created_at).toLocaleString('zh-CN', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -217,15 +261,15 @@ function UserCard({
           {onApprove && (
             <button
               onClick={onApprove}
-              className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-colors font-medium border border-emerald-500/30"
+              className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-medium border border-emerald-500/30 hover:scale-105 active:scale-95"
             >
-              批准
+              {showApprove ? '重新批准' : '批准'}
             </button>
           )}
           {onReject && (
             <button
               onClick={onReject}
-              className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors font-medium border border-red-500/30"
+              className="px-4 py-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-medium border border-red-500/30 hover:scale-105 active:scale-95"
             >
               拒绝
             </button>
@@ -233,17 +277,9 @@ function UserCard({
           {showRevoke && onRevoke && (
             <button
               onClick={onRevoke}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-all font-medium hover:scale-105 active:scale-95"
             >
               撤销
-            </button>
-          )}
-          {showApprove && onApprove && (
-            <button
-              onClick={onApprove}
-              className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-colors font-medium border border-emerald-500/30"
-            >
-              重新批准
             </button>
           )}
         </div>

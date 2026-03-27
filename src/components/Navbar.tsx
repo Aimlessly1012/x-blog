@@ -204,21 +204,31 @@ export default function Navbar() {
                       height={36}
                       className="rounded-full ring-2 ring-gray-700 group-hover:ring-pink-500/50 transition-all cursor-pointer"
                     />
-                    {session.user.name && (
-                      <div className="absolute top-full mt-2 right-0 px-3 py-1.5 bg-gray-800 text-gray-300 text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                        {session.user.name}
+                    {/* 下拉菜单 */}
+                    <div className="absolute top-full mt-2 right-0 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                      <div className="p-3 border-b border-gray-700">
+                        <p className="font-semibold text-gray-100 text-sm">{session.user.name || '用户'}</p>
+                        <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
                       </div>
-                    )}
+                      <div className="py-2">
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-pink-400 hover:bg-gray-700/50 transition-all text-sm"
+                        >
+                          <UserIcon className="w-4 h-4" />
+                          <span>个人中心</span>
+                        </Link>
+                        <button
+                          onClick={() => signOut({ callbackUrl: '/login' })}
+                          className="w-full flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 transition-all text-sm"
+                        >
+                          <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                          <span>退出登录</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
-                <button
-                  onClick={() => signOut({ callbackUrl: '/login' })}
-                  className="group flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-red-400 transition-all rounded-xl hover:bg-red-500/10"
-                  title="退出登录"
-                >
-                  <ArrowRightOnRectangleIcon className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
-                  <span className="hidden sm:inline font-medium">退出</span>
-                </button>
               </div>
             ) : status === 'unauthenticated' ? (
               <Link
