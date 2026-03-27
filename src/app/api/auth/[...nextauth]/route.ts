@@ -10,7 +10,7 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   useSecureCookies: false,
   callbacks: {
@@ -18,11 +18,9 @@ const handler = NextAuth({
       if (account?.provider === 'github') {
         const db = getDb()
         
-        // 检查用户是否存在
         let dbUser = db.prepare('SELECT * FROM users WHERE github_id = ?').get(user.id) as any
         
         if (!dbUser) {
-          // 新用户 - 检查是否是管理员
           const isAdmin = user.id === process.env.ADMIN_GITHUB_ID
           const userId = `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
           const now = new Date().toISOString()
@@ -41,32 +39,30 @@ const handler = NextAuth({
             now,
             now
           )
-          
-          dbUser = db.prepare('SELECT * FROM users WHERE github_id = ?').get(user.id) as any
         }
         
         return true
       }
       return true
     },
-    async jwt({ token, user, account }) {
-      // 首次登录时，将数据库信息添加到 token
-      if (account && user) {
+    async jwt({ token, user }) {
+      if (user) {
         const db = getDb()
         const dbUser = db.prepare('SELECT * FROM users WHERE github_id = ?').get(user.id) as any
         
         if (dbUser) {
+          token.userId = dbUser.id
           token.status = dbUser.status
           token.isAdmin = dbUser.is_admin === 1
         }
       }
       
-      // 每次访问时，刷新数据库中的最新状态
-      if (token.sub) {
+      if (token.sub && !user) {
         const db = getDb()
         const dbUser = db.prepare('SELECT * FROM users WHERE github_id = ?').get(token.sub) as any
         
         if (dbUser) {
+          token.userId = dbUser.id
           token.status = dbUser.status
           token.isAdmin = dbUser.is_admin === 1
         }
@@ -75,10 +71,20 @@ const handler = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session.user && token) {
-        (session.user as any).id = token.sub
-        (session.user as any).status = token.status
-        (session.user as any).isAdmin = token.isAdmin
+      if (session.user && token.sub) {
+        const db = getDb()
+        const dbUser = db.prepare('SELECT * FROM users WHERE github_id = ?').get(token.sub) as any
+        
+        if (dbUser) {
+          const user = session.user as any
+          user.id = dbUser.id
+          user.name = dbUser.name
+          user.email = dbUser.email
+          user.image = dbUser.image
+          user.status = dbUser.status
+          user.isAdmin = dbUser.is_admin === 1
+          user.githubId = token.sub
+        }
       }
       return session
     },

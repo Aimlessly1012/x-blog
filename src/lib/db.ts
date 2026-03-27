@@ -69,8 +69,8 @@ export function createArticle(input: CreateArticleInput): Article {
   const now = new Date().toISOString()
   
   const stmt = database.prepare(`
-    INSERT INTO articles (id, url, author, author_username, title, content, summary, translated_content, translated_summary, original_language, cover_image, published_at, status, error, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO articles (id, url, author, author_username, title, content, summary, translated_content, translated_summary, original_language, cover_image, published_at, tags, status, error, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `)
   
   stmt.run(
@@ -86,6 +86,7 @@ export function createArticle(input: CreateArticleInput): Article {
     input.originalLanguage || null,
     input.coverImage || null,
     input.publishedAt || null,
+    JSON.stringify(input.tags || []),
     input.status || 'pending',
     input.error || null,
     now,
@@ -173,6 +174,10 @@ export function updateArticle(id: string, input: UpdateArticleInput): Article | 
     updates.push('published_at = ?')
     values.push(input.publishedAt)
   }
+  if (input.tags !== undefined) {
+    updates.push('tags = ?')
+    values.push(JSON.stringify(input.tags))
+  }
   if (input.status !== undefined) {
     updates.push('status = ?')
     values.push(input.status)
@@ -214,6 +219,7 @@ function mapRowToArticle(row: Record<string, unknown>): Article {
     originalLanguage: row.original_language as string | null,
     coverImage: row.cover_image as string | null,
     publishedAt: row.published_at as string | null,
+    tags: JSON.parse((row.tags as string) || '[]'),
     status: row.status as Article['status'],
     error: row.error as string | null,
     createdAt: row.created_at as string,

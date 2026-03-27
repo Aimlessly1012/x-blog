@@ -3,14 +3,14 @@
 import { useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 
 interface SplitViewProps {
   originalContent: string
   translatedContent: string
-  summary?: string | null
 }
 
-export default function SplitView({ originalContent, translatedContent, summary }: SplitViewProps) {
+export default function SplitView({ originalContent, translatedContent }: SplitViewProps) {
   const leftRef = useRef<HTMLDivElement>(null)
   const rightRef = useRef<HTMLDivElement>(null)
   const isScrolling = useRef(false)
@@ -71,7 +71,10 @@ export default function SplitView({ originalContent, translatedContent, summary 
           className="flex-1 overflow-y-auto p-5"
         >
           <div className="prose prose-invert max-w-none text-base leading-relaxed">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
               {originalContent}
             </ReactMarkdown>
           </div>
@@ -91,23 +94,11 @@ export default function SplitView({ originalContent, translatedContent, summary 
           ref={rightRef}
           className="flex-1 overflow-y-auto p-5"
         >
-          {summary && (
-            <div className="bg-pink-900/20 rounded-xl p-4 mb-5 border border-pink-800/30">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-1.5 h-1.5 bg-pink-500 rounded-full"></span>
-                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wide">
-                  Summary
-                </span>
-              </div>
-              <div className="text-gray-300 text-sm">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {summary}
-                </ReactMarkdown>
-              </div>
-            </div>
-          )}
           <div className="prose prose-invert max-w-none text-base leading-relaxed">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
               {translatedContent}
             </ReactMarkdown>
           </div>

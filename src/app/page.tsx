@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowRightIcon, TrashIcon, SparklesIcon, ClockIcon, MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, TrashIcon, SparklesIcon, ClockIcon, MagnifyingGlassIcon, FunnelIcon, TagIcon } from '@heroicons/react/24/outline'
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline'
 import Navbar from '@/components/Navbar'
-import RequireAuth from '@/components/RequireAuth'
 import { Article } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -28,6 +28,27 @@ const STATUS_COLORS: Record<Article['status'], string> = {
   summarizing: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
   completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
   failed: 'bg-red-500/10 text-red-400 border-red-500/30'
+}
+
+// 标签颜色映射
+const TAG_COLORS: Record<string, string> = {
+  'Claude': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+  'Claude Code': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+  'OpenClaw': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+  'Skills': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+  'MCP': 'bg-teal-500/10 text-teal-400 border-teal-500/30',
+  'Prompt Engineering': 'bg-pink-500/10 text-pink-400 border-pink-500/30',
+  '教程': 'bg-orange-500/10 text-orange-400 border-orange-500/30',
+  '最佳实践': 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+  '快捷键': 'bg-green-500/10 text-green-400 border-green-500/30',
+  '工作流': 'bg-lime-500/10 text-lime-400 border-lime-500/30',
+  '技巧': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
+  '资源合集': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+  '效率提升': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+  '自动化': 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+  '安全': 'bg-red-500/10 text-red-400 border-red-500/30',
+  'AI Agent': 'bg-violet-500/10 text-violet-400 border-violet-500/30',
+  '开发者向': 'bg-slate-500/10 text-slate-400 border-slate-500/30',
 }
 
 type FilterType = 'all' | 'completed' | 'processing'
@@ -96,15 +117,34 @@ function FeaturedCard({ article, onDelete, isDeleting }: { article: Article, onD
           </h2>
         </Link>
 
+        {/* Tags */}
+        {article.tags && article.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {article.tags.slice(0, 5).map((tag, idx) => (
+              <span 
+                key={idx}
+                className={`px-2.5 py-1 rounded-full text-xs font-medium border ${TAG_COLORS[tag] || 'bg-gray-700/50 text-gray-400 border-gray-600'}`}
+              >
+                {tag}
+              </span>
+            ))}
+            {article.tags.length > 5 && (
+              <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 border border-gray-600">
+                +{article.tags.length - 5}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Summary */}
         <div className="flex-1 mb-4">
           {(article.translatedSummary || article.summary) && (
-            <div className="bg-gray-800/30 rounded-xl p-4 border-l-2 border-pink-500">
+            <div className="p-4 bg-gray-800/30 border-l-2 border-pink-500/50 rounded">
               <div className="flex items-center gap-2 mb-2">
                 <SparklesIcon className="w-4 h-4 text-pink-400" />
-                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider">AI Summary</span>
+                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider">Summary</span>
               </div>
-              <p className="text-gray-300 text-sm md:text-base line-clamp-3 leading-relaxed">
+              <p className="text-gray-300 text-sm md:text-base leading-relaxed line-clamp-3">
                 {article.translatedSummary || article.summary}
               </p>
             </div>
@@ -112,22 +152,22 @@ function FeaturedCard({ article, onDelete, isDeleting }: { article: Article, onD
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-800/50">
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-700/50">
+          <div className="flex items-center gap-4 text-xs text-gray-500">
             {article.publishedAt && (
-              <span className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5">
                 <ClockIcon className="w-4 h-4" />
-                {formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: zhCN })}
-              </span>
+                <span>{formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: zhCN })}</span>
+              </div>
             )}
           </div>
           {article.status === 'completed' && (
-            <Link
+            <Link 
               href={`/article/${article.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-pink-500/10 text-pink-400 rounded-lg hover:bg-pink-500/20 transition-all font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600/10 hover:bg-pink-600/20 text-pink-400 rounded-xl text-sm font-medium border border-pink-500/30 transition-all group/link"
             >
-              <span>阅读全文</span>
-              <ArrowRightIcon className="w-4 h-4" />
+              阅读全文
+              <ArrowRightIcon className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
             </Link>
           )}
         </div>
@@ -136,23 +176,23 @@ function FeaturedCard({ article, onDelete, isDeleting }: { article: Article, onD
   )
 }
 
-// Magazine 布局的小卡片
-function CompactCard({ article, onDelete, isDeleting }: { article: Article, onDelete: (id: string) => void, isDeleting: boolean }) {
+// Magazine 布局的中等卡片
+function MediumCard({ article, onDelete, isDeleting }: { article: Article, onDelete: (id: string) => void, isDeleting: boolean }) {
   const [isBookmarked, setIsBookmarked] = useState(false)
 
   return (
-    <article className="group bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800/50 hover:border-pink-500/30 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/10 h-full flex flex-col">
+    <article className="group relative bg-gray-900 rounded-2xl border border-gray-700/50 hover:border-pink-500/30 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/5 h-full flex flex-col">
       <div className="p-5 flex-1 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {article.authorUsername && (
-              <span className="inline-flex items-center px-2.5 py-1 bg-pink-500/10 text-pink-400 rounded-full text-xs font-semibold truncate max-w-[120px]">
+              <span className="inline-flex items-center px-2.5 py-1 bg-pink-500/10 text-pink-400 rounded-full text-xs font-semibold border border-pink-500/20">
                 @{article.authorUsername}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               onClick={() => setIsBookmarked(!isBookmarked)}
               className="p-1.5 hover:bg-gray-800/50 rounded-lg transition-colors"
@@ -174,32 +214,52 @@ function CompactCard({ article, onDelete, isDeleting }: { article: Article, onDe
         </div>
 
         {/* Title */}
-        <Link href={article.status === 'completed' ? `/article/${article.id}` : '#'} className="block mb-2">
-          <h3 className="text-base md:text-lg font-bold text-gray-100 line-clamp-2 group-hover:text-pink-400 transition-colors cursor-pointer leading-tight">
+        <Link href={article.status === 'completed' ? `/article/${article.id}` : '#'} className="block mb-3">
+          <h3 className="text-lg font-bold text-gray-100 line-clamp-2 group-hover:text-pink-400 transition-colors cursor-pointer leading-snug">
             {article.title || 'Untitled'}
           </h3>
         </Link>
 
+        {/* Tags */}
+        {article.tags && article.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {article.tags.slice(0, 3).map((tag, idx) => (
+              <span 
+                key={idx}
+                className={`px-2 py-0.5 rounded-full text-xs font-medium border ${TAG_COLORS[tag] || 'bg-gray-700/50 text-gray-400 border-gray-600'}`}
+              >
+                {tag}
+              </span>
+            ))}
+            {article.tags.length > 3 && (
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 border border-gray-600">
+                +{article.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Summary */}
-        <div className="flex-1 mb-3">
+        <div className="flex-1">
           {(article.translatedSummary || article.summary) && (
-            <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
               {article.translatedSummary || article.summary}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-800/50">
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold border ${STATUS_COLORS[article.status]}`}>
-            {STATUS_LABELS[article.status]}
-          </span>
+        <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-800/50">
+          <div className="text-xs text-gray-500">
+            {article.publishedAt && formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: zhCN })}
+          </div>
           {article.status === 'completed' && (
-            <Link
+            <Link 
               href={`/article/${article.id}`}
-              className="text-pink-400 hover:text-pink-300 text-sm font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 text-pink-400 hover:text-pink-300 text-sm font-medium transition-colors group/link"
             >
               阅读
+              <ArrowRightIcon className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
             </Link>
           )}
         </div>
@@ -210,265 +270,246 @@ function CompactCard({ article, onDelete, isDeleting }: { article: Article, onDe
 
 export default function HomePage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+  const [filterType, setFilterType] = useState<FilterType>('all')
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
 
-  // 移除了邀请码验证 - 现在使用 OAuth
+  // 未登录重定向到登录页
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
 
   useEffect(() => {
-    fetchArticles()
-  }, [])
+    if (status === 'authenticated') {
+      fetchArticles()
+    }
+  }, [status])
 
   async function fetchArticles() {
     try {
-      const response = await fetch('/api/articles')
-      const data = await response.json()
-      setArticles(data.data || [])
-      setError(null)
-    } catch (err) {
-      setError('加载失败，请刷新重试')
-      console.error(err)
+      const res = await fetch('/api/articles')
+      if (res.ok) {
+        const data = await res.json()
+        setArticles(data.data || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch articles:', error)
     } finally {
       setLoading(false)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('确定删除这篇文章？此操作无法撤销。')) return
-    
+    if (!confirm('确定要删除这篇文章吗？')) return
+
     setDeletingId(id)
     try {
-      const response = await fetch(`/api/articles/${id}`, { method: 'DELETE' })
-      if (!response.ok) throw new Error('删除失败')
-      setArticles(prev => prev.filter(a => a.id !== id))
-    } catch (err) {
-      console.error('Delete failed:', err)
-      alert('删除失败，请重试')
-      fetchArticles()
+      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        setArticles(prev => prev.filter(a => a.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to delete:', error)
     } finally {
       setDeletingId(null)
     }
   }
 
+  // 获取所有标签
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>()
+    articles.forEach(article => {
+      if (article.tags) {
+        article.tags.forEach(tag => tagSet.add(tag))
+      }
+    })
+    return Array.from(tagSet).sort()
+  }, [articles])
+
+  // 筛选文章
   const filteredArticles = useMemo(() => {
-    let filtered = articles
+    return articles.filter(article => {
+      // 搜索过滤
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase()
+        const matchTitle = article.title?.toLowerCase().includes(query)
+        const matchAuthor = article.author?.toLowerCase().includes(query)
+        const matchSummary = (article.translatedSummary || article.summary || '').toLowerCase().includes(query)
+        if (!matchTitle && !matchAuthor && !matchSummary) return false
+      }
 
-    if (activeFilter === 'completed') {
-      filtered = filtered.filter(a => a.status === 'completed')
-    } else if (activeFilter === 'processing') {
-      filtered = filtered.filter(a => a.status !== 'completed' && a.status !== 'failed')
-    }
+      // 状态过滤
+      if (filterType === 'completed' && article.status !== 'completed') return false
+      if (filterType === 'processing' && article.status === 'completed') return false
 
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(a => 
-        a.title?.toLowerCase().includes(query) ||
-        a.author?.toLowerCase().includes(query) ||
-        a.authorUsername?.toLowerCase().includes(query) ||
-        a.content?.toLowerCase().includes(query) ||
-        a.translatedContent?.toLowerCase().includes(query)
-      )
-    }
+      // 标签过滤
+      if (selectedTags.length > 0) {
+        const hasMatchingTag = selectedTags.some(tag => article.tags?.includes(tag))
+        if (!hasMatchingTag) return false
+      }
 
-    return filtered
-  }, [articles, activeFilter, searchQuery])
+      return true
+    })
+  }, [articles, searchQuery, filterType, selectedTags])
 
+  // Magazine 布局：1个大卡片 + 多个中等卡片
   const featuredArticle = filteredArticles[0]
-  const sideArticles = filteredArticles.slice(1, 3)
-  const gridArticles = filteredArticles.slice(3)
+  const otherArticles = filteredArticles.slice(1)
 
-  if (loading) {
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    )
+  }
+
+  // 登录检查中或数据加载中
+  if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-950">
+      <>
         <Navbar />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-          <div className="mb-8">
-            <div className="h-12 w-64 bg-gray-800 rounded-xl animate-pulse mb-6"></div>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+        <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <ArticleCardSkeleton size="large" />
-            </div>
-            <div className="space-y-6">
-              <ArticleCardSkeleton size="small" />
-              <ArticleCardSkeleton size="small" />
+              <ArticleCardSkeleton size="medium" />
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </>
     )
   }
 
   return (
-    <RequireAuth>
-      <div className="min-h-screen bg-gray-950">
-        <Navbar />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        {error && (
-          <div className="bg-red-900/20 border border-red-800/50 text-red-400 px-4 py-3 rounded-xl mb-6 backdrop-blur-sm">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              <span>{error}</span>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* 搜索和筛选栏 */}
+          <div className="mb-8 space-y-4">
+            {/* 搜索框 */}
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="搜索文章、作者..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-300 placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
+                />
+              </div>
+              
+              {/* 状态筛选 */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilterType('all')}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
+                    filterType === 'all'
+                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
+                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
+                  }`}
+                >
+                  全部
+                </button>
+                <button
+                  onClick={() => setFilterType('completed')}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
+                    filterType === 'completed'
+                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
+                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
+                  }`}
+                >
+                  已完成
+                </button>
+                <button
+                  onClick={() => setFilterType('processing')}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
+                    filterType === 'processing'
+                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
+                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
+                  }`}
+                >
+                  处理中
+                </button>
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* 搜索和筛选栏 */}
-        <div className="mb-6 md:mb-8 space-y-4">
-          {/* 搜索框 */}
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <input
-              type="text"
-              placeholder="搜索标题、作者、内容..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-gray-900/50 border border-gray-800 rounded-xl text-gray-100 placeholder-gray-500 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            {/* 标签筛选 */}
+            {allTags.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <TagIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                      selectedTags.includes(tag)
+                        ? TAG_COLORS[tag] || 'bg-pink-500/10 text-pink-400 border-pink-500/30'
+                        : 'bg-gray-900 text-gray-500 border-gray-800 hover:border-gray-700'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {selectedTags.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-all"
+                  >
+                    清除筛选
+                  </button>
+                )}
+              </div>
             )}
           </div>
 
-          {/* 筛选标签 */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 text-gray-500">
-              <FunnelIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">筛选:</span>
+          {/* Magazine 布局 */}
+          {filteredArticles.length === 0 ? (
+            <div className="text-center py-20">
+              <SparklesIcon className="w-16 h-16 text-gray-700 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">暂无文章</h3>
+              <p className="text-gray-600">
+                {searchQuery || selectedTags.length > 0 ? '没有匹配的文章' : '还没有任何文章'}
+              </p>
             </div>
-            {[
-              { key: 'all' as FilterType, label: '全部', count: articles.length },
-              { key: 'completed' as FilterType, label: '已完成', count: articles.filter(a => a.status === 'completed').length },
-              { key: 'processing' as FilterType, label: '处理中', count: articles.filter(a => a.status !== 'completed' && a.status !== 'failed').length },
-            ].map(filter => (
-              <button
-                key={filter.key}
-                onClick={() => setActiveFilter(filter.key)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  activeFilter === filter.key
-                    ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30'
-                    : 'bg-gray-900/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200 border border-gray-800'
-                }`}
-              >
-                {filter.label}
-                <span className={`ml-2 ${activeFilter === filter.key ? 'text-pink-100' : 'text-gray-600'}`}>
-                  {filter.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {searchQuery && (
-            <div className="text-sm text-gray-500">
-              找到 <span className="text-pink-400 font-semibold">{filteredArticles.length}</span> 篇相关文章
-            </div>
-          )}
-        </div>
-
-        {/* Magazine 布局内容区 */}
-        {filteredArticles.length === 0 ? (
-          <div className="text-center py-20 md:py-32">
-            <div className="mb-8 relative">
-              <div className="text-6xl md:text-8xl mb-4 animate-bounce-slow">
-                {searchQuery || activeFilter !== 'all' ? '🔍' : '🐰'}
-              </div>
-              <div className="absolute inset-0 top-12 flex items-center justify-center">
-                <div className="w-32 h-32 bg-pink-500/10 rounded-full blur-2xl"></div>
-              </div>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-100 mb-3">
-              {searchQuery || activeFilter !== 'all' ? '没有找到相关文章' : '空空如也'}
-            </h2>
-            <p className="text-gray-500 text-base md:text-lg mb-8 md:mb-10 max-w-md mx-auto px-4">
-              {searchQuery || activeFilter !== 'all' 
-                ? '试试其他关键词或筛选条件'
-                : '还没有文章哦～添加一个 X (Twitter) 链接开始构建你的信息茧房'
-              }
-            </p>
-            {!searchQuery && activeFilter === 'all' && (
-              <Link
-                href="/add"
-                className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-pink-600 to-pink-500 text-white rounded-xl hover:from-pink-500 hover:to-pink-400 transition-all duration-300 font-semibold shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-105 transform"
-              >
-                <SparklesIcon className="w-5 h-5" />
-                添加第一篇文章
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* 主要布局：大卡片 + 侧边小卡片 */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* 左侧：特色大卡片 */}
-              <div className="lg:col-span-2">
-                {featuredArticle && (
+          ) : (
+            <div className="space-y-6">
+              {/* 大卡片 */}
+              {featuredArticle && (
+                <div className="mb-6">
                   <FeaturedCard 
                     article={featuredArticle} 
                     onDelete={handleDelete}
                     isDeleting={deletingId === featuredArticle.id}
                   />
-                )}
-              </div>
+                </div>
+              )}
 
-              {/* 右侧：2个小卡片堆叠 */}
-              <div className="space-y-6">
-                {sideArticles.map(article => (
-                  <CompactCard
-                    key={article.id}
-                    article={article}
-                    onDelete={handleDelete}
-                    isDeleting={deletingId === article.id}
-                  />
-                ))}
-              </div>
+              {/* 中等卡片网格 */}
+              {otherArticles.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {otherArticles.map(article => (
+                    <MediumCard
+                      key={article.id}
+                      article={article}
+                      onDelete={handleDelete}
+                      isDeleting={deletingId === article.id}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-
-            {/* 下方：3列小卡片网格 */}
-            {gridArticles.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {gridArticles.map(article => (
-                  <CompactCard
-                    key={article.id}
-                    article={article}
-                    onDelete={handleDelete}
-                    isDeleting={deletingId === article.id}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-
-      <style jsx global>{`
-        @keyframes bounce-slow {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        
-        .animate-bounce-slow {
-          animation: bounce-slow 3s ease-in-out infinite;
-        }
-      `}</style>
+          )}
+        </div>
       </div>
-    </RequireAuth>
+    </>
   )
 }

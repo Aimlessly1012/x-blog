@@ -13,6 +13,7 @@ export interface Article {
   publishedAt: string | null
   status: 'pending' | 'crawling' | 'translating' | 'summarizing' | 'completed' | 'failed'
   error: string | null
+  tags: string[] // 新增标签字段
   createdAt: string
   updatedAt: string
 }
@@ -29,6 +30,7 @@ export interface CreateArticleInput {
   translatedContent?: string | null
   translatedSummary?: string | null
   originalLanguage?: string | null
+  tags?: string[] // 新增标签字段
   status?: Article['status']
   error?: string | null
 }
@@ -44,6 +46,7 @@ export interface UpdateArticleInput {
   originalLanguage?: string | null
   coverImage?: string | null
   publishedAt?: string | null
+  tags?: string[] // 新增标签字段
   status?: Article['status']
   error?: string | null
 }
