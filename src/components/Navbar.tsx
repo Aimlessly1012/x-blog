@@ -23,46 +23,9 @@ export default function Navbar() {
     return pathname?.startsWith(path)
   }
 
-  // 避免 hydration 错误：在客户端 mounted 之前返回静态版本
+  // 避免 hydration 错误：返回 null 让客户端完全渲染
   if (!mounted) {
-    return (
-      <nav className="border-b border-gray-800/50 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 shadow-lg shadow-black/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
-                <div className="relative">
-                  <Image
-                    src="/images/logo.jpg"
-                    alt="HeiTu Logo"
-                    width={40}
-                    height={40}
-                    className="rounded-full ring-2 ring-gray-700 group-hover:ring-pink-500 transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-pink-500/50"
-                  />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-                  HeiTu 🐰
-                </span>
-              </Link>
-              <div className="flex items-center gap-6">
-                <Link href="/" className="text-gray-400 hover:text-pink-400 transition-all text-sm font-medium">
-                  首页
-                </Link>
-                <Link href="/authors" className="text-gray-400 hover:text-pink-400 transition-all text-sm font-medium">
-                  X热门博主
-                </Link>
-                <Link href="/skills" className="text-gray-400 hover:text-pink-400 transition-all text-sm font-medium">
-                  Skill相关
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="w-9 h-9 bg-gray-800 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </nav>
-    )
+    return null
   }
 
   return (

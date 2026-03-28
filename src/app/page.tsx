@@ -277,19 +277,49 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [mounted, setMounted] = useState(false)
 
   // 获取用户状态
   const userStatus = (session?.user as any)?.status
 
-  // 未登录重定向到登录页
+  // Hydration 保护 - 客户端渲染标记
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 认证检查 + 文章加载
+  useEffect(() => {
+    if (!mounted || status === 'loading') return
+    
+    // 未登录 → 跳转登录页
     if (status === 'unauthenticated') {
       router.push('/login')
+      return
     }
-  }, [status, router])
+    
+    // 已登录但状态是 approved → 加载文章
+    if (status === 'authenticated' && userStatus === 'approved') {
+      fetchArticles()
+    }
+    // pending/rejected 用户不加载文章，由下面的 UI 处理
+  }, [mounted, status, userStatus, router])
 
-  // 显示加载状态
-  if (status === 'loading' || loading) {
+  async function fetchArticles() {
+    try {
+      const res = await fetch('/api/articles')
+      if (res.ok) {
+        const data = await res.json()
+        setArticles(data.data || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch articles:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 服务端渲染或加载中 - 显示骨架屏（避免 hydration 错误）
+  if (!mounted || status === 'loading' || !userStatus) {
     return (
       <>
         <Navbar />
@@ -407,20 +437,6 @@ export default function HomePage() {
       fetchArticles()
     }
   }, [status, userStatus])
-
-  async function fetchArticles() {
-    try {
-      const res = await fetch('/api/articles')
-      if (res.ok) {
-        const data = await res.json()
-        setArticles(data.data || [])
-      }
-    } catch (error) {
-      console.error('Failed to fetch articles:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   async function handleDelete(id: string) {
     if (!confirm('确定要删除这篇文章吗？')) return
