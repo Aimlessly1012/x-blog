@@ -36,7 +36,7 @@ export default function Navbar() {
         borderColor: 'var(--bd)',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-6">
         <div className="flex items-center gap-6 h-14">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
