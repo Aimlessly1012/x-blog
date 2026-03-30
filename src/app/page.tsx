@@ -1,527 +1,233 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
-import Link from 'next/link'
-import { ArrowRightIcon, TrashIcon, SparklesIcon, ClockIcon, MagnifyingGlassIcon, TagIcon } from '@heroicons/react/24/outline'
-import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
-import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline'
+import { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import { Article } from '@/lib/types'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
+import { ClockIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon } from '@heroicons/react/24/outline'
 
-const STATUS_LABELS: Record<Article['status'], string> = {
-  pending: '等待中',
-  crawling: '爬取中',
-  translating: '翻译中',
-  summarizing: '总结中',
-  completed: '已完成',
-  failed: '失败'
+// Reading-first color palette
+const TAG_STYLES: Record<string, string> = {
+  'Claude': 'bg-purple-100 text-purple-700',
+  'Claude Code': 'bg-indigo-100 text-indigo-700',
+  '晨报': 'bg-pink-100 text-pink-700',
+  '新功能': 'bg-emerald-100 text-emerald-700',
+  '实用技巧': 'bg-blue-100 text-blue-700',
+  '开发教程': 'bg-orange-100 text-orange-700',
+  'AI资讯': 'bg-cyan-100 text-cyan-700',
+  '热门讨论': 'bg-red-100 text-red-700',
 }
 
-const STATUS_COLORS: Record<Article['status'], string> = {
-  pending: 'bg-gray-700/50 text-gray-400 border-gray-600',
-  crawling: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  translating: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  summarizing: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-  completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  failed: 'bg-red-500/10 text-red-400 border-red-500/30'
+function getTagStyle(tag: string) {
+  return TAG_STYLES[tag] || 'bg-gray-100 text-gray-600'
 }
 
-// 标签颜色映射
-const TAG_COLORS: Record<string, string> = {
-  'Claude': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
-  'Claude Code': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
-  'OpenClaw': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
-  'Skills': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-  'MCP': 'bg-teal-500/10 text-teal-400 border-teal-500/30',
-  'Prompt Engineering': 'bg-pink-500/10 text-pink-400 border-pink-500/30',
-  '教程': 'bg-orange-500/10 text-orange-400 border-orange-500/30',
-  '最佳实践': 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-  '快捷键': 'bg-green-500/10 text-green-400 border-green-500/30',
-  '工作流': 'bg-lime-500/10 text-lime-400 border-lime-500/30',
-  '技巧': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
-  '资源合集': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-  '效率提升': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-  '自动化': 'bg-sky-500/10 text-sky-400 border-sky-500/30',
-  '安全': 'bg-red-500/10 text-red-400 border-red-500/30',
-  'AI Agent': 'bg-violet-500/10 text-violet-400 border-violet-500/30',
-  '开发者向': 'bg-slate-500/10 text-slate-400 border-slate-500/30',
-}
-
-type FilterType = 'all' | 'completed' | 'processing'
-
-function ArticleCardSkeleton({ size = 'medium' }: { size?: 'large' | 'medium' | 'small' }) {
+function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: boolean }) {
+  const tags = item.tags || []
+  
   return (
-    <div className={`bg-gray-900 rounded-2xl overflow-hidden animate-pulse ${size === 'large' ? 'min-h-[400px]' : 'min-h-[200px]'}`}>
-      <div className="p-5 h-full flex flex-col">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="h-6 w-24 bg-gray-800 rounded-full"></div>
-        </div>
-        <div className="h-6 bg-gray-800 rounded mb-3 w-3/4"></div>
-        <div className="flex-1"></div>
-        <div className="h-4 bg-gray-800 rounded"></div>
+    <article className={`group ${isFirst ? 'pb-16 mb-12 border-b border-gray-200' : 'py-12'}`}>
+      {/* Date */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-sm text-gray-400">
+          {item.publishedAt ? format(new Date(item.publishedAt), 'MM月dd日', { locale: zhCN }) : ''}
+        </span>
+        <span className="text-gray-300">·</span>
+        <span className="text-sm text-gray-400">
+          {item.publishedAt ? format(new Date(item.publishedAt), 'HH:mm', { locale: zhCN }) : ''}
+        </span>
       </div>
+      
+      {/* Title */}
+      <h2 className={`font-bold text-gray-900 mb-4 group-hover:text-pink-600 transition-colors ${isFirst ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+        {item.title || '无标题'}
+      </h2>
+      
+      {/* Author */}
+      {item.authorUsername && (
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+            <span className="text-white text-xs font-medium">@{item.authorUsername[0].toUpperCase()}</span>
+          </div>
+          <span className="text-sm text-gray-500">@{item.authorUsername}</span>
+        </div>
+      )}
+      
+      {/* Tags */}
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-6">
+          {tags.slice(0, 4).map(tag => (
+            <span 
+              key={tag} 
+              className={`px-3 py-1 rounded-full text-xs font-medium ${getTagStyle(tag)}`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+      
+      {/* Summary */}
+      {item.summary && (
+        <p className="text-lg text-gray-600 mb-6 leading-relaxed font-medium">
+          {item.summary}
+        </p>
+      )}
+      
+      {/* Content preview */}
+      {item.content && (
+        <div className="text-gray-500 leading-relaxed mb-6 prose prose-gray max-w-none">
+          <p className="text-base line-clamp-3">{item.content.substring(0, 300)}...</p>
+        </div>
+      )}
+      
+      {/* Read more */}
+      {item.url && (
+        <a 
+          href={item.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 font-medium text-sm transition-colors group/link"
+        >
+          <BookOpenIcon className="w-4 h-4" />
+          <span>阅读原文</span>
+          <ArrowRightIcon className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+        </a>
+      )}
+    </article>
+  )
+}
+
+function LoadingItem() {
+  return (
+    <div className="py-12 border-b border-gray-100 animate-pulse">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="h-4 w-20 bg-gray-200 rounded"></div>
+        <div className="h-4 w-4 bg-gray-200 rounded"></div>
+        <div className="h-4 w-16 bg-gray-200 rounded"></div>
+      </div>
+      <div className="h-10 bg-gray-200 rounded mb-4 w-3/4"></div>
+      <div className="h-4 w-16 bg-gray-200 rounded mb-6"></div>
+      <div className="h-4 bg-gray-200 rounded mb-2"></div>
+      <div className="h-4 bg-gray-200 rounded mb-2 w-11/12"></div>
+      <div className="h-4 bg-gray-200 rounded w-10/12"></div>
     </div>
   )
 }
 
-// Magazine 布局的大卡片
-function FeaturedCard({ article, onDelete, isDeleting }: { article: Article, onDelete: (id: string) => void, isDeleting: boolean }) {
-  const [isBookmarked, setIsBookmarked] = useState(false)
-
+function EmptyReading() {
   return (
-    <article className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl border border-gray-700/50 hover:border-pink-500/30 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/10 h-full flex flex-col">
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+    <div className="py-24 text-center">
+      {/* Reading icon */}
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-pink-50 mb-8">
+        <BookOpenIcon className="w-10 h-10 text-pink-400" />
+      </div>
       
-      <div className="relative p-6 md:p-8 flex-1 flex flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            {article.authorUsername && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-pink-500/10 text-pink-400 rounded-full text-sm font-semibold border border-pink-500/20">
-                @{article.authorUsername}
-              </span>
-            )}
-            <span className={`px-3 py-1.5 rounded-full text-xs font-semibold border ${STATUS_COLORS[article.status]}`}>
-              {STATUS_LABELS[article.status]}
-            </span>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
-              onClick={() => setIsBookmarked(!isBookmarked)}
-              className="p-2 hover:bg-gray-800/50 rounded-lg transition-colors"
-            >
-              {isBookmarked ? (
-                <BookmarkSolidIcon className="w-5 h-5 text-pink-400" />
-              ) : (
-                <BookmarkOutlineIcon className="w-5 h-5 text-gray-500 hover:text-pink-400" />
-              )}
-            </button>
-            <button
-              onClick={() => onDelete(article.id)}
-              disabled={isDeleting}
-              className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-400 transition-colors"
-            >
-              <TrashIcon className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Title */}
-        <Link href={article.status === 'completed' ? `/article/${article.id}` : '#'} className="block mb-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-100 line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:to-purple-400 transition-all cursor-pointer leading-tight">
-            {article.title || 'Untitled'}
-          </h2>
-        </Link>
-
-        {/* Tags */}
-        {article.tags && article.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {article.tags.slice(0, 5).map((tag, idx) => (
-              <span 
-                key={idx}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium border ${TAG_COLORS[tag] || 'bg-gray-700/50 text-gray-400 border-gray-600'}`}
-              >
-                {tag}
-              </span>
-            ))}
-            {article.tags.length > 5 && (
-              <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 border border-gray-600">
-                +{article.tags.length - 5}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Summary */}
-        <div className="flex-1 mb-4">
-          {(article.translatedSummary || article.summary) && (
-            <div className="p-4 bg-gray-800/30 border-l-2 border-pink-500/50 rounded">
-              <div className="flex items-center gap-2 mb-2">
-                <SparklesIcon className="w-4 h-4 text-pink-400" />
-                <span className="text-xs font-semibold text-pink-400 uppercase tracking-wider">Summary</span>
-              </div>
-              <p className="text-gray-300 text-sm md:text-base leading-relaxed line-clamp-3">
-                {article.translatedSummary || article.summary}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-700/50">
-          <div className="flex items-center gap-4 text-xs text-gray-500">
-            {article.publishedAt && (
-              <div className="flex items-center gap-1.5">
-                <ClockIcon className="w-4 h-4" />
-                <span>{formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: zhCN })}</span>
-              </div>
-            )}
-          </div>
-          {article.status === 'completed' && (
-            <Link 
-              href={`/article/${article.id}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-pink-600/10 hover:bg-pink-600/20 text-pink-400 rounded-xl text-sm font-medium border border-pink-500/30 transition-all group/link"
-            >
-              阅读全文
-              <ArrowRightIcon className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-            </Link>
-          )}
-        </div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        晨报即将到来
+      </h2>
+      
+      <p className="text-gray-500 mb-8 max-w-md mx-auto">
+        明早 <span className="text-pink-600 font-semibold">8:00</span> 准时推送<br />
+        专注阅读，告别信息过载
+      </p>
+      
+      {/* Features */}
+      <div className="flex flex-wrap justify-center gap-3 text-sm">
+        {['Claude 新功能', '实用技巧', '开发教程'].map((f, i) => (
+          <span key={i} className="px-4 py-2 bg-gray-100 rounded-full text-gray-600">
+            {f}
+          </span>
+        ))}
       </div>
-    </article>
-  )
-}
-
-// Magazine 布局的中等卡片
-function MediumCard({ article, onDelete, isDeleting }: { article: Article, onDelete: (id: string) => void, isDeleting: boolean }) {
-  const [isBookmarked, setIsBookmarked] = useState(false)
-
-  return (
-    <article className="group relative bg-gray-900 rounded-2xl border border-gray-700/50 hover:border-pink-500/30 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-pink-500/5 h-full flex flex-col">
-      <div className="p-5 flex-1 flex flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            {article.authorUsername && (
-              <span className="inline-flex items-center px-2.5 py-1 bg-pink-500/10 text-pink-400 rounded-full text-xs font-semibold border border-pink-500/20">
-                @{article.authorUsername}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <button
-              onClick={() => setIsBookmarked(!isBookmarked)}
-              className="p-1.5 hover:bg-gray-800/50 rounded-lg transition-colors"
-            >
-              {isBookmarked ? (
-                <BookmarkSolidIcon className="w-4 h-4 text-pink-400" />
-              ) : (
-                <BookmarkOutlineIcon className="w-4 h-4 text-gray-500 hover:text-pink-400" />
-              )}
-            </button>
-            <button
-              onClick={() => onDelete(article.id)}
-              disabled={isDeleting}
-              className="p-1.5 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-400 transition-colors"
-            >
-              <TrashIcon className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Title */}
-        <Link href={article.status === 'completed' ? `/article/${article.id}` : '#'} className="block mb-3">
-          <h3 className="text-lg font-bold text-gray-100 line-clamp-2 group-hover:text-pink-400 transition-colors cursor-pointer leading-snug">
-            {article.title || 'Untitled'}
-          </h3>
-        </Link>
-
-        {/* Tags */}
-        {article.tags && article.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {article.tags.slice(0, 3).map((tag, idx) => (
-              <span 
-                key={idx}
-                className={`px-2 py-0.5 rounded-full text-xs font-medium border ${TAG_COLORS[tag] || 'bg-gray-700/50 text-gray-400 border-gray-600'}`}
-              >
-                {tag}
-              </span>
-            ))}
-            {article.tags.length > 3 && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 border border-gray-600">
-                +{article.tags.length - 3}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Summary */}
-        <div className="flex-1">
-          {(article.translatedSummary || article.summary) && (
-            <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
-              {article.translatedSummary || article.summary}
-            </p>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-800/50">
-          <div className="text-xs text-gray-500">
-            {article.publishedAt && formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true, locale: zhCN })}
-          </div>
-          {article.status === 'completed' && (
-            <Link 
-              href={`/article/${article.id}`}
-              className="inline-flex items-center gap-1.5 text-pink-400 hover:text-pink-300 text-sm font-medium transition-colors group/link"
-            >
-              阅读
-              <ArrowRightIcon className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 transition-transform" />
-            </Link>
-          )}
-        </div>
-      </div>
-    </article>
+    </div>
   )
 }
 
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState<FilterType>('all')
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [mounted, setMounted] = useState(false)
 
-  // 客户端渲染标记
   useEffect(() => {
     setMounted(true)
-  }, [])
-
-  // 加载文章
-  useEffect(() => {
-    if (!mounted) return
     fetchArticles()
-  }, [mounted])
+  }, [])
 
   async function fetchArticles() {
     try {
-      const res = await fetch('/api/articles')
-      if (res.ok) {
-        const data = await res.json()
-        setArticles(data.data || [])
-      }
+      const res = await fetch('/api/morning-news?limit=30')
+      const data = await res.json()
+      setArticles(data.data || [])
     } catch (error) {
-      console.error('Failed to fetch articles:', error)
+      console.error('Failed to fetch morning news:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  // 服务端渲染时显示骨架屏（避免 hydration 错误）
   if (!mounted) {
     return (
-      <>
+      <div className="min-h-screen bg-white">
         <Navbar />
-        <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <ArticleCardSkeleton size="large" />
-              <ArticleCardSkeleton size="medium" />
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  // 加载中显示骨架屏
-  if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <ArticleCardSkeleton size="large" />
-              <ArticleCardSkeleton size="medium" />
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('确定要删除这篇文章吗？')) return
-
-    setDeletingId(id)
-    try {
-      const res = await fetch(`/api/articles/${id}`, { method: 'DELETE' })
-      if (res.ok) {
-        setArticles(prev => prev.filter(a => a.id !== id))
-      }
-    } catch (error) {
-      console.error('Failed to delete:', error)
-    } finally {
-      setDeletingId(null)
-    }
-  }
-
-  // 获取所有标签
-  const allTags = useMemo(() => {
-    const tagSet = new Set<string>()
-    articles.forEach(article => {
-      if (article.tags) {
-        article.tags.forEach(tag => tagSet.add(tag))
-      }
-    })
-    return Array.from(tagSet).sort()
-  }, [articles])
-
-  // 筛选文章
-  const filteredArticles = useMemo(() => {
-    return articles.filter(article => {
-      // 搜索过滤
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase()
-        const matchTitle = article.title?.toLowerCase().includes(query)
-        const matchAuthor = article.author?.toLowerCase().includes(query)
-        const matchSummary = (article.translatedSummary || article.summary || '').toLowerCase().includes(query)
-        if (!matchTitle && !matchAuthor && !matchSummary) return false
-      }
-
-      // 状态过滤
-      if (filterType === 'completed' && article.status !== 'completed') return false
-      if (filterType === 'processing' && article.status === 'completed') return false
-
-      // 标签过滤
-      if (selectedTags.length > 0) {
-        const hasMatchingTag = selectedTags.some(tag => article.tags?.includes(tag))
-        if (!hasMatchingTag) return false
-      }
-
-      return true
-    })
-  }, [articles, searchQuery, filterType, selectedTags])
-
-  // Magazine 布局：1个大卡片 + 多个中等卡片
-  const featuredArticle = filteredArticles[0]
-  const otherArticles = filteredArticles.slice(1)
-
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
+        <main className="max-w-2xl mx-auto px-4 py-8">
+          <LoadingItem />
+        </main>
+      </div>
     )
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <Navbar />
-      <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* 搜索和筛选栏 */}
-          <div className="mb-8 space-y-4">
-            {/* 搜索框 */}
-            <div className="flex gap-3">
-              <div className="relative flex-1">
-                <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="搜索文章、作者..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-gray-300 placeholder-gray-500 focus:outline-none focus:border-pink-500/50 transition-colors"
-                />
-              </div>
-              
-              {/* 状态筛选 */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFilterType('all')}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
-                    filterType === 'all'
-                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
-                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
-                  }`}
-                >
-                  全部
-                </button>
-                <button
-                  onClick={() => setFilterType('completed')}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
-                    filterType === 'completed'
-                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
-                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
-                  }`}
-                >
-                  已完成
-                </button>
-                <button
-                  onClick={() => setFilterType('processing')}
-                  className={`px-4 py-3 rounded-xl font-medium transition-all ${
-                    filterType === 'processing'
-                      ? 'bg-pink-500/10 text-pink-400 border-2 border-pink-500/30'
-                      : 'bg-gray-900 text-gray-400 border border-gray-800 hover:border-gray-700'
-                  }`}
-                >
-                  处理中
-                </button>
-              </div>
+      
+      {/* Header */}
+      <header className="border-b border-gray-100 bg-white sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">每日晨报</h1>
+              <p className="text-sm text-gray-400 mt-1">每个工作日 8:00 更新</p>
             </div>
-
-            {/* 标签筛选 */}
-            {allTags.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <TagIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                      selectedTags.includes(tag)
-                        ? TAG_COLORS[tag] || 'bg-pink-500/10 text-pink-400 border-pink-500/30'
-                        : 'bg-gray-900 text-gray-500 border-gray-800 hover:border-gray-700'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-                {selectedTags.length > 0 && (
-                  <button
-                    onClick={() => setSelectedTags([])}
-                    className="px-3 py-1.5 rounded-full text-sm font-medium bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-all"
-                  >
-                    清除筛选
-                  </button>
-                )}
+            {!loading && articles.length > 0 && (
+              <div className="text-sm text-gray-400">
+                共 {articles.length} 篇
               </div>
             )}
           </div>
-
-          {/* Magazine 布局 */}
-          {filteredArticles.length === 0 ? (
-            <div className="text-center py-20">
-              <SparklesIcon className="w-16 h-16 text-gray-700 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-400 mb-2">暂无文章</h3>
-              <p className="text-gray-600">
-                {searchQuery || selectedTags.length > 0 ? '没有匹配的文章' : '还没有任何文章'}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* 大卡片 */}
-              {featuredArticle && (
-                <div className="mb-6">
-                  <FeaturedCard 
-                    article={featuredArticle} 
-                    onDelete={handleDelete}
-                    isDeleting={deletingId === featuredArticle.id}
-                  />
-                </div>
-              )}
-
-              {/* 中等卡片网格 */}
-              {otherArticles.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {otherArticles.map(article => (
-                    <MediumCard
-                      key={article.id}
-                      article={article}
-                      onDelete={handleDelete}
-                      isDeleting={deletingId === article.id}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
-      </div>
-    </>
+      </header>
+
+      {/* Content */}
+      <main className="max-w-2xl mx-auto px-4">
+        {loading ? (
+          <>
+            <LoadingItem />
+            <LoadingItem />
+            <LoadingItem />
+          </>
+        ) : articles.length === 0 ? (
+          <EmptyReading />
+        ) : (
+          <div className="divide-y divide-gray-100">
+            {articles.map((article, index) => (
+              <ReadingNewsCard 
+                key={article.id} 
+                item={article} 
+                isFirst={index === 0}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+      
+      {/* Footer */}
+      <footer className="border-t border-gray-100 mt-16 py-8">
+        <div className="max-w-2xl mx-auto px-4 text-center text-sm text-gray-400">
+          <p>信息茧房 · 专注 AI 资讯阅读</p>
+        </div>
+      </footer>
+    </div>
   )
 }

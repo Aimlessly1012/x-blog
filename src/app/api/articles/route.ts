@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { url, title, author, authorUsername, publishedAt, content, summary, coverImage, translatedContent, translatedSummary, originalLanguage, status } = body
+    const { url, title, author, authorUsername, publishedAt, content, summary, coverImage, translatedContent, translatedSummary, originalLanguage, status, tags } = body
     
     // If URL provided, check for duplicates
     if (url) {
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       translatedSummary: translatedSummary || null,
       originalLanguage: originalLanguage || 'en',
       status: status || (content ? (translatedContent ? 'completed' : 'pending_translation') : 'pending'),
+      tags: tags || null,
     })
     
     return NextResponse.json(

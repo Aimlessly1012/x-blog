@@ -23,27 +23,27 @@ export default async function ArticlePage({ params }: PageProps) {
   const hasTranslation = article.translatedContent && article.content && article.content !== article.translatedContent
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Title Card */}
-        <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6 mb-6">
-          {/* Tags - 标题上方的标签 */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+          {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {article.authorUsername && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-pink-600/20 text-pink-400 rounded-full text-sm font-medium border border-pink-500/20">
+              <span className="inline-flex items-center px-3 py-1.5 bg-pink-100 text-pink-700 rounded-full text-sm font-medium">
                 @{article.authorUsername}
               </span>
             )}
             {article.originalLanguage && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-400 rounded-full text-xs font-medium border border-gray-700">
+              <span className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
                 {article.originalLanguage === 'zh' ? '🇨🇳 中文' : article.originalLanguage === 'en' ? '🇬🇧 English' : article.originalLanguage}
               </span>
             )}
             {article.publishedAt && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-400 rounded-full text-xs border border-gray-700">
+              <span className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded-full text-xs border border-gray-200">
                 🕐 {formatDistanceToNow(new Date(article.publishedAt), {
                   addSuffix: true,
                   locale: zhCN
@@ -55,7 +55,7 @@ export default async function ArticlePage({ params }: PageProps) {
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-500/10 text-pink-400 rounded-full text-xs font-medium border border-pink-500/20 hover:bg-pink-500/20 transition-colors ml-auto"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-pink-600 rounded-full text-xs font-medium border border-pink-200 hover:bg-pink-100 transition-colors ml-auto"
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -66,26 +66,26 @@ export default async function ArticlePage({ params }: PageProps) {
           </div>
           
           {/* Title */}
-          <h1 className="text-xl md:text-2xl font-bold text-white leading-snug">
-            {article.title || 'Untitled'}
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug">
+            {article.title || '无标题'}
           </h1>
           
-          {/* Author Name (如果与 username 不同) */}
+          {/* Author */}
           {article.author && article.authorUsername !== article.author && (
             <p className="text-gray-500 text-sm mt-2">作者：{article.author}</p>
           )}
         </div>
 
-        {/* Split View - Side by Side with Sync Scroll */}
+        {/* Split View or Single Column */}
         {hasTranslation ? (
           <SplitView 
             originalContent={article.content || ''}
             translatedContent={article.translatedContent || ''}
           />
         ) : (
-          /* Fallback: Single column view */
-          <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8">
-            <div className="prose prose-invert max-w-none text-base leading-relaxed">
+          /* Single column view */
+          <div className="bg-white rounded-2xl border border-gray-200 p-8">
+            <div className="prose prose-gray max-w-none text-base leading-relaxed">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
         {/* Meta Footer */}
         <div className="mt-8 text-center">
-          <p className="text-gray-600 text-xs">
+          <p className="text-gray-400 text-xs">
             添加于 {new Date(article.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>

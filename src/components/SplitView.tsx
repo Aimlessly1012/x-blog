@@ -56,21 +56,21 @@ export default function SplitView({ originalContent, translatedContent }: SplitV
   }, [])
 
   return (
-    <div className="grid md:grid-cols-2 gap-6 h-[calc(100vh-280px)] min-h-[500px]">
+    <div className="grid md:grid-cols-2 gap-6 min-h-[500px]">
       {/* Left: Original */}
-      <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-800 bg-gray-800/50">
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-200">English</span>
-            <span className="text-gray-600">·</span>
-            <span className="text-xs text-gray-500">原文</span>
+            <span className="text-sm font-semibold text-gray-700">English</span>
+            <span className="text-gray-300">·</span>
+            <span className="text-xs text-gray-400">原文</span>
           </div>
         </div>
         <div 
           ref={leftRef}
           className="flex-1 overflow-y-auto p-5"
         >
-          <div className="prose prose-invert max-w-none text-base leading-relaxed">
+          <div className="prose prose-gray max-w-none text-base leading-relaxed">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
@@ -82,11 +82,11 @@ export default function SplitView({ originalContent, translatedContent }: SplitV
       </div>
 
       {/* Right: Translation */}
-      <div className="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-800 bg-pink-900/20">
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-100 bg-pink-50">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-pink-400">中文</span>
-            <span className="text-pink-700">·</span>
+            <span className="text-sm font-semibold text-pink-700">中文</span>
+            <span className="text-pink-300">·</span>
             <span className="text-xs text-pink-500">译文/总结</span>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function SplitView({ originalContent, translatedContent }: SplitV
           ref={rightRef}
           className="flex-1 overflow-y-auto p-5"
         >
-          <div className="prose prose-invert max-w-none text-base leading-relaxed">
+          <div className="prose prose-gray max-w-none text-base leading-relaxed">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
