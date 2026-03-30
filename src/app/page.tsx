@@ -55,12 +55,12 @@ function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: b
       )}
       
       {/* Tags */}
-      {tags.length > 0 && (
+      {tags && tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
           {tags.slice(0, 4).map(tag => (
             <span 
               key={tag} 
-              className={`px-3 py-1 rounded-full text-xs font-medium ${getTagStyle(tag)}`}
+              className="px-3 py-1 rounded-full text-xs font-medium bg-pink-950 text-pink-400 border border-pink-800"
             >
               {tag}
             </span>
