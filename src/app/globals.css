@@ -78,11 +78,19 @@ a, button, input, [class*="transition"] {
   box-shadow: 0 0 0 3px var(--ac-dim);
 }
 .input::placeholder {
-  color: var(--t3);
+  color: var(--t2);
+  opacity: 0.6;
 }
 .input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* 全局 input placeholder 样式 */
+input::placeholder,
+textarea::placeholder {
+  color: var(--t2);
+  opacity: 0.6;
 }
 
 .btn {

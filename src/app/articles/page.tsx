@@ -284,7 +284,7 @@ export default function ArticlesPage() {
     return (
       <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
         <Navbar />
-        <main className="max-w-4xl mx-auto px-4 py-8 space-y-4">
+        <main className="max-w-full mx-auto px-4 py-8 space-y-4">
           <Skeleton /><Skeleton /><Skeleton />
         </main>
       </div>
@@ -304,7 +304,7 @@ export default function ArticlesPage() {
           borderBottom: '1px solid var(--bd)',
         }}
       >
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-full mx-auto px-6 py-4">
           <h1 className="text-lg font-bold mb-4" style={{ color: 'var(--t1)' }}>X精选文章</h1>
 
           {/* Search + Filter */}
@@ -319,7 +319,14 @@ export default function ArticlesPage() {
                 placeholder="搜索文章、作者…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="input pl-9"
+                className="w-full pl-9 pr-4 py-2 rounded-xl text-sm transition-colors focus:outline-none"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--bd)',
+                  color: 'var(--t1)',
+                }}
+                onFocus={e => ((e.target as HTMLInputElement).style.borderColor = 'var(--ac)')}
+                onBlur={e => ((e.target as HTMLInputElement).style.borderColor = 'var(--bd)')}
               />
             </div>
             <div className="flex gap-1.5">
@@ -343,7 +350,7 @@ export default function ArticlesPage() {
       </header>
 
       {/* Content */}
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-full mx-auto px-6 py-6">
         {loading ? (
           <div className="space-y-4">
             <Skeleton /><Skeleton /><Skeleton />

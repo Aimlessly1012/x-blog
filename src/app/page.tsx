@@ -186,7 +186,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
         <Navbar />
-        <main className="max-w-2xl mx-auto px-4 py-8">
+        <main className="max-w-full mx-auto px-4 py-8">
           <LoadingItem />
         </main>
       </div>
@@ -202,7 +202,7 @@ export default function HomePage() {
         className="sticky top-14 z-10"
         style={{ background: 'rgba(7,8,11,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--bd)' }}
       >
-        <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="max-w-full mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-lg font-bold" style={{ color: 'var(--t1)' }}>每日晨报</h1>
@@ -218,7 +218,7 @@ export default function HomePage() {
       </header>
 
       {/* Content */}
-      <main className="max-w-2xl mx-auto px-4">
+      <main className="max-w-full mx-auto px-4">
         {loading ? (
           <>
             <LoadingItem />
@@ -238,7 +238,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="mt-16 py-8" style={{ borderTop: '1px solid var(--bd)' }}>
-        <div className="max-w-2xl mx-auto px-4 text-center">
+        <div className="max-w-full mx-auto px-4 text-center">
           <p className="text-xs" style={{ color: 'var(--t3)' }}>
             信息茧房 · 专注 AI 资讯阅读
           </p>

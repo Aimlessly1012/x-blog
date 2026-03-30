@@ -248,7 +248,7 @@ function RecommendForm() {
         border: '1px solid rgba(240,54,104,0.15)',
       }}
     >
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-full mx-auto">
         <div className="text-center mb-6">
           <h2 className="text-lg font-bold mb-1" style={{ color: 'var(--t1)' }}>推荐优质博主</h2>
           <p className="text-sm" style={{ color: 'var(--t2)' }}>
@@ -310,7 +310,7 @@ export default function AuthorsPage() {
 
       {/* Header */}
       <header style={{ borderBottom: '1px solid var(--bd)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-8 text-center">
+        <div className="max-w-full mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--t1)' }}>X 热门博主</h1>
           <p className="text-sm" style={{ color: 'var(--t2)' }}>
             {AUTHORS.length} 位优质创作者 · 持续更新
@@ -319,7 +319,7 @@ export default function AuthorsPage() {
       </header>
 
       {/* Grid */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-full mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {AUTHORS.map(author => (
             <AuthorCard key={author.username} author={author} />
@@ -328,7 +328,7 @@ export default function AuthorsPage() {
       </main>
 
       {/* Recommend Form */}
-      <div className="max-w-4xl mx-auto px-4 pb-12">
+      <div className="max-w-full mx-auto px-4 pb-12">
         <RecommendForm />
       </div>
     </div>

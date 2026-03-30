@@ -27,7 +27,7 @@ export default async function ArticlePage({ params }: PageProps) {
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-full mx-auto px-4 py-6">
         {/* Title Card */}
         <div
           className="rounded-2xl p-6 mb-5"
