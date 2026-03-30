@@ -7,11 +7,11 @@ import { formatDistanceToNow, format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { ClockIcon, ArrowRightIcon, BookOpenIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
-// 精简的标签颜色映射 - 使用统一的深色主题粉色系
+// 柔和的标签颜色映射 - 灰色底 + 淡色文字
 const TAG_VARIANTS = {
-  primary: 'bg-pink-950/50 text-pink-400 border-pink-800/50 hover:bg-pink-900/50',
-  secondary: 'bg-purple-950/50 text-purple-400 border-purple-800/50 hover:bg-purple-900/50',
-  accent: 'bg-cyan-950/50 text-cyan-400 border-cyan-800/50 hover:bg-cyan-900/50',
+  primary: 'bg-gray-800/30 text-pink-300 border-gray-700/30 hover:bg-gray-700/40 hover:border-pink-500/20',
+  secondary: 'bg-gray-800/30 text-purple-300 border-gray-700/30 hover:bg-gray-700/40 hover:border-purple-500/20',
+  accent: 'bg-gray-800/30 text-cyan-300 border-gray-700/30 hover:bg-gray-700/40 hover:border-cyan-500/20',
 }
 
 function getTagVariant(tag: string): string {
