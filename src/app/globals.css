@@ -138,3 +138,50 @@ body {
   background: #111827;
   color: #f3f4f6;
 }
+
+/* 标签样式 - 深色主题 */
+.tag-claude { 
+  background-color: #581c87; 
+  color: #c084fc; 
+  border: 1px solid #7e22ce; 
+}
+.tag-claude-code { 
+  background-color: #312e81; 
+  color: #a5b4fc; 
+  border: 1px solid #4338ca; 
+}
+.tag-morning { 
+  background-color: #831843; 
+  color: #f472b6; 
+  border: 1px solid #be185d; 
+}
+.tag-feature { 
+  background-color: #064e3b; 
+  color: #6ee7b7; 
+  border: 1px solid #047857; 
+}
+.tag-tip { 
+  background-color: #1e3a8a; 
+  color: #93c5fd; 
+  border: 1px solid #1d4ed8; 
+}
+.tag-tutorial { 
+  background-color: #7c2d12; 
+  color: #fdba74; 
+  border: 1px solid #c2410c; 
+}
+.tag-ai-news { 
+  background-color: #164e63; 
+  color: #67e8f9; 
+  border: 1px solid #0e7490; 
+}
+.tag-hot { 
+  background-color: #7f1d1d; 
+  color: #fca5a5; 
+  border: 1px solid #b91c1c; 
+}
+.tag-default { 
+  background-color: #1f2937; 
+  color: #9ca3af; 
+  border: 1px solid #374151; 
+}

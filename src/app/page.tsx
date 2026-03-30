@@ -7,20 +7,20 @@ import { formatDistanceToNow, format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { ClockIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon } from '@heroicons/react/24/outline'
 
-// Dark theme color palette
-const TAG_STYLES: Record<string, string> = {
-  'Claude': 'bg-purple-900 text-purple-400 border border-purple-700',
-  'Claude Code': 'bg-indigo-900 text-indigo-400 border border-indigo-700',
-  '晨报': 'bg-pink-900 text-pink-400 border border-pink-700',
-  '新功能': 'bg-emerald-900 text-emerald-400 border border-emerald-700',
-  '实用技巧': 'bg-blue-900 text-blue-400 border border-blue-700',
-  '开发教程': 'bg-orange-900 text-orange-400 border border-orange-700',
-  'AI资讯': 'bg-cyan-900 text-cyan-400 border border-cyan-700',
-  '热门讨论': 'bg-red-900 text-red-400 border border-red-700',
+// Dark theme color palette - using CSS classes for Tailwind v4 JIT
+const TAG_CLASSES: Record<string, string> = {
+  'Claude': 'tag-claude',
+  'Claude Code': 'tag-claude-code',
+  '晨报': 'tag-morning',
+  '新功能': 'tag-feature',
+  '实用技巧': 'tag-tip',
+  '开发教程': 'tag-tutorial',
+  'AI资讯': 'tag-ai-news',
+  '热门讨论': 'tag-hot',
 }
 
 function getTagStyle(tag: string) {
-  return TAG_STYLES[tag] || 'bg-gray-800 text-gray-500'
+  return TAG_CLASSES[tag] || 'tag-default'
 }
 
 function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: boolean }) {
