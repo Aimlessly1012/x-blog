@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-gray-950">
+    <html lang="zh-CN" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} style={{ backgroundColor: '#030712' }}>
+      <body className="min-h-full flex flex-col" style={{ backgroundColor: '#030712', color: '#f3f4f6' }}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -7,40 +7,40 @@ import { formatDistanceToNow, format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { ClockIcon, ArrowLeftIcon, ArrowRightIcon, BookOpenIcon } from '@heroicons/react/24/outline'
 
-// Dark theme color palette
+// Reading-first color palette
 const TAG_STYLES: Record<string, string> = {
-  'Claude': 'bg-purple-900 text-purple-400 border border-purple-700',
-  'Claude Code': 'bg-indigo-900 text-indigo-400 border border-indigo-700',
-  '晨报': 'bg-pink-900 text-pink-400 border border-pink-700',
-  '新功能': 'bg-emerald-900 text-emerald-400 border border-emerald-700',
-  '实用技巧': 'bg-blue-900 text-blue-400 border border-blue-700',
-  '开发教程': 'bg-orange-900 text-orange-400 border border-orange-700',
-  'AI资讯': 'bg-cyan-900 text-cyan-400 border border-cyan-700',
-  '热门讨论': 'bg-red-900 text-red-400 border border-red-700',
+  'Claude': 'bg-purple-100 text-purple-700',
+  'Claude Code': 'bg-indigo-100 text-indigo-700',
+  '晨报': 'bg-pink-100 text-pink-700',
+  '新功能': 'bg-emerald-100 text-emerald-700',
+  '实用技巧': 'bg-blue-100 text-blue-700',
+  '开发教程': 'bg-orange-100 text-orange-700',
+  'AI资讯': 'bg-cyan-100 text-cyan-700',
+  '热门讨论': 'bg-red-100 text-red-700',
 }
 
 function getTagStyle(tag: string) {
-  return TAG_STYLES[tag] || 'bg-gray-800 text-gray-500'
+  return TAG_STYLES[tag] || 'bg-gray-800 text-gray-400'
 }
 
 function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: boolean }) {
   const tags = item.tags || []
   
   return (
-    <article className={`group ${isFirst ? 'pb-16 mb-12 border-b border-gray-800' : 'py-12'}`}>
+    <article className={`group ${isFirst ? 'pb-16 mb-12 border-b border-gray-700' : 'py-12'}`}>
       {/* Date */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-400">
           {item.publishedAt ? format(new Date(item.publishedAt), 'MM月dd日', { locale: zhCN }) : ''}
         </span>
         <span className="text-gray-300">·</span>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-400">
           {item.publishedAt ? format(new Date(item.publishedAt), 'HH:mm', { locale: zhCN }) : ''}
         </span>
       </div>
       
       {/* Title */}
-      <h2 className={`font-bold text-gray-100 mb-4 group-hover:text-pink-400 transition-colors ${isFirst ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+      <h2 className={`font-bold text-gray-100 mb-4 group-hover:text-pink-600 transition-colors ${isFirst ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
         {item.title || '无标题'}
       </h2>
       
@@ -70,7 +70,7 @@ function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: b
       
       {/* Summary */}
       {item.summary && (
-        <p className="text-lg text-gray-500 mb-6 leading-relaxed font-medium">
+        <p className="text-lg text-gray-400 mb-6 leading-relaxed font-medium">
           {item.summary}
         </p>
       )}
@@ -136,7 +136,7 @@ function EmptyReading() {
       {/* Features */}
       <div className="flex flex-wrap justify-center gap-3 text-sm">
         {['Claude 新功能', '实用技巧', '开发教程'].map((f, i) => (
-          <span key={i} className="px-4 py-2 bg-gray-800 rounded-full text-gray-500">
+          <span key={i} className="px-4 py-2 bg-gray-800 rounded-full text-gray-400">
             {f}
           </span>
         ))}
@@ -188,10 +188,10 @@ export default function HomePage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-100">每日晨报</h1>
-              <p className="text-sm text-gray-500 mt-1">每个工作日 8:00 更新</p>
+              <p className="text-sm text-gray-400 mt-1">每个工作日 8:00 更新</p>
             </div>
             {!loading && articles.length > 0 && (
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-400">
                 共 {articles.length} 篇
               </div>
             )}
@@ -224,7 +224,7 @@ export default function HomePage() {
       
       {/* Footer */}
       <footer className="border-t border-gray-800 mt-16 py-8">
-        <div className="max-w-2xl mx-auto px-4 text-center text-sm text-gray-500">
+        <div className="max-w-2xl mx-auto px-4 text-center text-sm text-gray-400">
           <p>信息茧房 · 专注 AI 资讯阅读</p>
         </div>
       </footer>
