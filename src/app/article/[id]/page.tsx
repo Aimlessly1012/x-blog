@@ -15,38 +15,59 @@ interface PageProps {
 export default async function ArticlePage({ params }: PageProps) {
   const { id } = await params
   const article = getArticleById(id)
-  
-  if (!article) {
-    notFound()
-  }
-  
-  const hasTranslation = article.translatedContent && article.content && article.content !== article.translatedContent
+
+  if (!article) notFound()
+
+  const hasTranslation =
+    article.translatedContent &&
+    article.content &&
+    article.content !== article.translatedContent
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
       <Navbar />
 
-      {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Title Card */}
-        <div className="bg-gray-950 rounded-2xl border border-gray-700 p-6 mb-6">
-          {/* Tags */}
+        <div
+          className="rounded-2xl p-6 mb-5"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--bd)' }}
+        >
+          {/* Meta badges */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {article.authorUsername && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-pink-100 text-pink-700 rounded-full text-sm font-medium">
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                style={{
+                  background: 'var(--ac-dim)',
+                  color: 'var(--ac)',
+                  border: '1px solid rgba(240,54,104,0.2)',
+                }}
+              >
                 @{article.authorUsername}
               </span>
             )}
             {article.originalLanguage && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-400 rounded-full text-xs font-medium">
-                {article.originalLanguage === 'zh' ? '🇨🇳 中文' : article.originalLanguage === 'en' ? '🇬🇧 English' : article.originalLanguage}
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                style={{ background: 'var(--bg-surface)', color: 'var(--t2)', border: '1px solid var(--bd)' }}
+              >
+                {article.originalLanguage === 'zh'
+                  ? '🇨🇳 中文'
+                  : article.originalLanguage === 'en'
+                  ? '🇬🇧 English'
+                  : article.originalLanguage}
               </span>
             )}
             {article.publishedAt && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-500 rounded-full text-xs border border-gray-700">
-                🕐 {formatDistanceToNow(new Date(article.publishedAt), {
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs"
+                style={{ background: 'var(--bg-surface)', color: 'var(--t3)', border: '1px solid var(--bd)' }}
+              >
+                🕐{' '}
+                {formatDistanceToNow(new Date(article.publishedAt), {
                   addSuffix: true,
-                  locale: zhCN
+                  locale: zhCN,
                 })}
               </span>
             )}
@@ -55,51 +76,61 @@ export default async function ArticlePage({ params }: PageProps) {
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-50 text-pink-600 rounded-full text-xs font-medium border border-pink-200 hover:bg-pink-100 transition-colors ml-auto"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all ml-auto"
+                style={{
+                  background: 'var(--ac-dim)',
+                  color: 'var(--ac)',
+                  border: '1px solid rgba(240,54,104,0.2)',
+                }}
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
                 原地址
               </a>
             )}
           </div>
-          
+
           {/* Title */}
-          <h1 className="text-xl md:text-2xl font-bold text-gray-100 leading-snug">
+          <h1 className="text-xl md:text-2xl font-bold leading-snug" style={{ color: 'var(--t1)' }}>
             {article.title || '无标题'}
           </h1>
-          
-          {/* Author */}
+
           {article.author && article.authorUsername !== article.author && (
-            <p className="text-gray-500 text-sm mt-2">作者：{article.author}</p>
+            <p className="text-sm mt-2" style={{ color: 'var(--t3)' }}>
+              作者：{article.author}
+            </p>
           )}
         </div>
 
-        {/* Split View or Single Column */}
+        {/* Content */}
         {hasTranslation ? (
-          <SplitView 
+          <SplitView
             originalContent={article.content || ''}
             translatedContent={article.translatedContent || ''}
           />
         ) : (
-          /* Single column view */
-          <div className="bg-gray-950 rounded-2xl border border-gray-700 p-8">
-            <div className="prose prose-gray max-w-none text-base leading-relaxed">
-              <ReactMarkdown 
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-              >
+          <div
+            className="rounded-2xl p-8"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--bd)' }}
+          >
+            <div className="prose prose-invert max-w-none text-sm leading-relaxed">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {article.translatedContent || article.content}
               </ReactMarkdown>
             </div>
           </div>
         )}
 
-        {/* Meta Footer */}
+        {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-gray-400 text-xs">
-            添加于 {new Date(article.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+          <p className="text-xs" style={{ color: 'var(--t3)' }}>
+            添加于{' '}
+            {new Date(article.createdAt).toLocaleDateString('zh-CN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
           </p>
         </div>
       </main>
