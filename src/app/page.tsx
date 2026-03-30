@@ -20,14 +20,14 @@ const TAG_STYLES: Record<string, string> = {
 }
 
 function getTagStyle(tag: string) {
-  return TAG_STYLES[tag] || 'bg-gray-100 text-gray-600'
+  return TAG_STYLES[tag] || 'bg-gray-800 text-gray-400'
 }
 
 function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: boolean }) {
   const tags = item.tags || []
   
   return (
-    <article className={`group ${isFirst ? 'pb-16 mb-12 border-b border-gray-200' : 'py-12'}`}>
+    <article className={`group ${isFirst ? 'pb-16 mb-12 border-b border-gray-700' : 'py-12'}`}>
       {/* Date */}
       <div className="flex items-center gap-2 mb-4">
         <span className="text-sm text-gray-400">
@@ -40,7 +40,7 @@ function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: b
       </div>
       
       {/* Title */}
-      <h2 className={`font-bold text-gray-900 mb-4 group-hover:text-pink-600 transition-colors ${isFirst ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+      <h2 className={`font-bold text-gray-100 mb-4 group-hover:text-pink-600 transition-colors ${isFirst ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
         {item.title || '无标题'}
       </h2>
       
@@ -70,7 +70,7 @@ function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: b
       
       {/* Summary */}
       {item.summary && (
-        <p className="text-lg text-gray-600 mb-6 leading-relaxed font-medium">
+        <p className="text-lg text-gray-400 mb-6 leading-relaxed font-medium">
           {item.summary}
         </p>
       )}
@@ -101,17 +101,17 @@ function ReadingNewsCard({ item, isFirst = false }: { item: Article; isFirst?: b
 
 function LoadingItem() {
   return (
-    <div className="py-12 border-b border-gray-100 animate-pulse">
+    <div className="py-12 border-b border-gray-800 animate-pulse">
       <div className="flex items-center gap-2 mb-4">
-        <div className="h-4 w-20 bg-gray-200 rounded"></div>
-        <div className="h-4 w-4 bg-gray-200 rounded"></div>
-        <div className="h-4 w-16 bg-gray-200 rounded"></div>
+        <div className="h-4 w-20 bg-gray-700 rounded"></div>
+        <div className="h-4 w-4 bg-gray-700 rounded"></div>
+        <div className="h-4 w-16 bg-gray-700 rounded"></div>
       </div>
-      <div className="h-10 bg-gray-200 rounded mb-4 w-3/4"></div>
-      <div className="h-4 w-16 bg-gray-200 rounded mb-6"></div>
-      <div className="h-4 bg-gray-200 rounded mb-2"></div>
-      <div className="h-4 bg-gray-200 rounded mb-2 w-11/12"></div>
-      <div className="h-4 bg-gray-200 rounded w-10/12"></div>
+      <div className="h-10 bg-gray-700 rounded mb-4 w-3/4"></div>
+      <div className="h-4 w-16 bg-gray-700 rounded mb-6"></div>
+      <div className="h-4 bg-gray-700 rounded mb-2"></div>
+      <div className="h-4 bg-gray-700 rounded mb-2 w-11/12"></div>
+      <div className="h-4 bg-gray-700 rounded w-10/12"></div>
     </div>
   )
 }
@@ -124,7 +124,7 @@ function EmptyReading() {
         <BookOpenIcon className="w-10 h-10 text-pink-400" />
       </div>
       
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">
+      <h2 className="text-2xl font-bold text-gray-100 mb-4">
         晨报即将到来
       </h2>
       
@@ -136,7 +136,7 @@ function EmptyReading() {
       {/* Features */}
       <div className="flex flex-wrap justify-center gap-3 text-sm">
         {['Claude 新功能', '实用技巧', '开发教程'].map((f, i) => (
-          <span key={i} className="px-4 py-2 bg-gray-100 rounded-full text-gray-600">
+          <span key={i} className="px-4 py-2 bg-gray-800 rounded-full text-gray-400">
             {f}
           </span>
         ))}
@@ -169,7 +169,7 @@ export default function HomePage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-950">
         <Navbar />
         <main className="max-w-2xl mx-auto px-4 py-8">
           <LoadingItem />
@@ -179,15 +179,15 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-950">
       <Navbar />
       
       {/* Header */}
-      <header className="border-b border-gray-100 bg-white sticky top-0 z-10">
+      <header className="border-b border-gray-800 bg-gray-950 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">每日晨报</h1>
+              <h1 className="text-2xl font-bold text-gray-100">每日晨报</h1>
               <p className="text-sm text-gray-400 mt-1">每个工作日 8:00 更新</p>
             </div>
             {!loading && articles.length > 0 && (
@@ -223,7 +223,7 @@ export default function HomePage() {
       </main>
       
       {/* Footer */}
-      <footer className="border-t border-gray-100 mt-16 py-8">
+      <footer className="border-t border-gray-800 mt-16 py-8">
         <div className="max-w-2xl mx-auto px-4 text-center text-sm text-gray-400">
           <p>信息茧房 · 专注 AI 资讯阅读</p>
         </div>

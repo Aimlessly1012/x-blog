@@ -109,7 +109,7 @@ const SPECIALTY_COLORS: Record<string, string> = {
   'Productivity': 'bg-emerald-100 text-emerald-700',
   'AI Tutorials': 'bg-orange-100 text-orange-700',
   'Claude': 'bg-violet-100 text-violet-700',
-  'OpenAI': 'bg-gray-100 text-gray-700',
+  'OpenAI': 'bg-gray-800 text-gray-300',
   'Prompt Techniques': 'bg-pink-100 text-pink-700',
   'Claude Tips': 'bg-violet-100 text-violet-700',
   'Best Practices': 'bg-rose-100 text-rose-700',
@@ -128,7 +128,7 @@ const SPECIALTY_COLORS: Record<string, string> = {
   'AI Startup': 'bg-pink-100 text-pink-700',
   'Product': 'bg-blue-100 text-blue-700',
   'AI News': 'bg-cyan-100 text-cyan-700',
-  'Tool Reviews': 'bg-gray-100 text-gray-700',
+  'Tool Reviews': 'bg-gray-800 text-gray-300',
   'Daily Updates': 'bg-yellow-100 text-yellow-700',
   'AI Safety': 'bg-red-100 text-red-700',
   'Anthropic': 'bg-orange-100 text-orange-700',
@@ -138,7 +138,7 @@ const SPECIALTY_COLORS: Record<string, string> = {
 }
 
 function getSpecialtyClass(specialty: string) {
-  return SPECIALTY_COLORS[specialty] || 'bg-gray-100 text-gray-600'
+  return SPECIALTY_COLORS[specialty] || 'bg-gray-800 text-gray-400'
 }
 
 function AuthorCard({ author }: { author: Author }) {
@@ -147,7 +147,7 @@ function AuthorCard({ author }: { author: Author }) {
       href={`https://x.com/${author.username}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="group bg-white rounded-2xl border border-gray-200 p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 block"
+      className="group bg-gray-950 rounded-2xl border border-gray-700 p-6 hover:border-gray-300 hover:shadow-md transition-all duration-200 block"
     >
       {/* Avatar + Name */}
       <div className="flex items-start gap-4 mb-4">
@@ -156,7 +156,7 @@ function AuthorCard({ author }: { author: Author }) {
             <img
               src={author.avatar}
               alt={author.displayName}
-              className="w-full h-full rounded-full object-cover bg-white"
+              className="w-full h-full rounded-full object-cover bg-gray-950"
               loading="lazy"
               onError={(e) => {
                 e.currentTarget.style.display = 'none'
@@ -164,14 +164,14 @@ function AuthorCard({ author }: { author: Author }) {
                 if (fallback) fallback.style.display = 'flex'
               }}
             />
-            <div className="hidden w-full h-full rounded-full bg-gray-200 items-center justify-center text-xl font-bold text-pink-500">
+            <div className="hidden w-full h-full rounded-full bg-gray-700 items-center justify-center text-xl font-bold text-pink-500">
               {author.displayName.charAt(0).toUpperCase()}
             </div>
           </div>
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-gray-900 group-hover:text-pink-600 transition-colors truncate">
+          <h3 className="text-lg font-bold text-gray-100 group-hover:text-pink-600 transition-colors truncate">
             {author.displayName}
           </h3>
           <p className="text-sm text-gray-500 flex items-center gap-1">
@@ -182,7 +182,7 @@ function AuthorCard({ author }: { author: Author }) {
       </div>
 
       {/* Bio */}
-      <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">
+      <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2">
         {author.bio}
       </p>
 
@@ -253,7 +253,7 @@ function RecommendForm() {
     <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-2xl p-8">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">推荐优质博主</h2>
+          <h2 className="text-xl font-bold text-gray-100 mb-2">推荐优质博主</h2>
           <p className="text-gray-500 text-sm">发现值得关注的 AI 领域创作者？提交他们的链接吧</p>
         </div>
 
@@ -306,14 +306,14 @@ function RecommendForm() {
 
 export default function AuthorsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-gray-950 border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">X 热门博主</h1>
+            <h1 className="text-2xl font-bold text-gray-100 mb-2">X 热门博主</h1>
             <p className="text-gray-500 text-sm">
               {AUTHORS.length} 位优质创作者 · 持续更新
             </p>

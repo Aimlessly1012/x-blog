@@ -26,11 +26,11 @@ const TAG_COLORS: Record<string, string> = {
   '自动化': 'bg-sky-100 text-sky-700',
   '安全': 'bg-red-100 text-red-700',
   'AI Agent': 'bg-violet-100 text-violet-700',
-  '开发者向': 'bg-gray-100 text-gray-700',
+  '开发者向': 'bg-gray-800 text-gray-300',
 }
 
 function getTagClass(tag: string) {
-  return TAG_COLORS[tag] || 'bg-gray-100 text-gray-600'
+  return TAG_COLORS[tag] || 'bg-gray-800 text-gray-400'
 }
 
 const STATUS_LABELS: Record<Article['status'], string> = {
@@ -43,7 +43,7 @@ const STATUS_LABELS: Record<Article['status'], string> = {
 }
 
 const STATUS_COLORS: Record<Article['status'], string> = {
-  pending: 'bg-gray-100 text-gray-500',
+  pending: 'bg-gray-800 text-gray-500',
   crawling: 'bg-blue-100 text-blue-600',
   translating: 'bg-yellow-100 text-yellow-600',
   summarizing: 'bg-purple-100 text-purple-600',
@@ -55,14 +55,14 @@ type FilterType = 'all' | 'completed' | 'processing'
 
 function ArticleCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse">
+    <div className="bg-gray-950 rounded-2xl border border-gray-700 p-6 animate-pulse">
       <div className="flex items-center gap-2 mb-4">
-        <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
-        <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+        <div className="h-6 w-24 bg-gray-700 rounded-full"></div>
+        <div className="h-6 w-16 bg-gray-700 rounded-full"></div>
       </div>
-      <div className="h-6 bg-gray-200 rounded mb-3 w-3/4"></div>
-      <div className="h-4 bg-gray-200 rounded mb-2 w-full"></div>
-      <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+      <div className="h-6 bg-gray-700 rounded mb-3 w-3/4"></div>
+      <div className="h-4 bg-gray-700 rounded mb-2 w-full"></div>
+      <div className="h-4 bg-gray-700 rounded w-2/3"></div>
     </div>
   )
 }
@@ -72,7 +72,7 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
   const tags = article.tags || []
 
   return (
-    <article className="group bg-white rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200 overflow-hidden">
+    <article className="group bg-gray-950 rounded-2xl border border-gray-700 hover:border-gray-300 hover:shadow-md transition-all duration-200 overflow-hidden">
       <div className="p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
@@ -89,7 +89,7 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
           <div className="flex items-center gap-1">
             <button
               onClick={() => setIsBookmarked(!isBookmarked)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
             >
               {isBookmarked ? (
                 <BookmarkSolidIcon className="w-5 h-5 text-pink-500" />
@@ -108,7 +108,7 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-pink-600 transition-colors">
+        <h3 className="text-xl font-bold text-gray-100 mb-3 line-clamp-2 group-hover:text-pink-600 transition-colors">
           {article.title || '无标题'}
         </h3>
 
@@ -131,7 +131,7 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
               </span>
             ))}
             {tags.length > 4 && (
-              <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+              <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800 text-gray-500">
                 +{tags.length - 4}
               </span>
             )}
@@ -139,7 +139,7 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-4 border-t border-gray-800">
           <div className="flex items-center gap-1.5 text-sm text-gray-400">
             <ClockIcon className="w-4 h-4" />
             <span>
@@ -164,10 +164,10 @@ function ArticleCard({ article, onDelete, isDeleting }: { article: Article; onDe
 function EmptyState() {
   return (
     <div className="text-center py-20">
-      <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-6">
+      <div className="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mx-auto mb-6">
         <BookOpenIcon className="w-10 h-10 text-gray-400" />
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-2">暂无文章</h3>
+      <h3 className="text-xl font-bold text-gray-100 mb-2">暂无文章</h3>
       <p className="text-gray-500 max-w-md mx-auto">
         还没有任何文章内容<br />
         去看看 <a href="/" className="text-pink-600 hover:underline">晨报</a> 有什么新内容吧
@@ -234,7 +234,7 @@ export default function ArticlesPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-900">
         <Navbar />
         <main className="max-w-4xl mx-auto px-4 py-8">
           <div className="space-y-4">
@@ -248,13 +248,13 @@ export default function ArticlesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-gray-950 border-b border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">X精选文章</h1>
+          <h1 className="text-2xl font-bold text-gray-100 mb-4">X精选文章</h1>
           
           {/* Search & Filter */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -276,7 +276,7 @@ export default function ArticlesPage() {
                   className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                     filter === f 
                       ? 'bg-pink-500 text-white' 
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                   }`}
                 >
                   {f === 'all' ? '全部' : f === 'completed' ? '已完成' : '处理中'}

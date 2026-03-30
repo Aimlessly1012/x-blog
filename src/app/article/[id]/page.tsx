@@ -23,13 +23,13 @@ export default async function ArticlePage({ params }: PageProps) {
   const hasTranslation = article.translatedContent && article.content && article.content !== article.translatedContent
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Title Card */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
+        <div className="bg-gray-950 rounded-2xl border border-gray-700 p-6 mb-6">
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {article.authorUsername && (
@@ -38,12 +38,12 @@ export default async function ArticlePage({ params }: PageProps) {
               </span>
             )}
             {article.originalLanguage && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-400 rounded-full text-xs font-medium">
                 {article.originalLanguage === 'zh' ? '🇨🇳 中文' : article.originalLanguage === 'en' ? '🇬🇧 English' : article.originalLanguage}
               </span>
             )}
             {article.publishedAt && (
-              <span className="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-500 rounded-full text-xs border border-gray-200">
+              <span className="inline-flex items-center px-3 py-1.5 bg-gray-800 text-gray-500 rounded-full text-xs border border-gray-700">
                 🕐 {formatDistanceToNow(new Date(article.publishedAt), {
                   addSuffix: true,
                   locale: zhCN
@@ -66,7 +66,7 @@ export default async function ArticlePage({ params }: PageProps) {
           </div>
           
           {/* Title */}
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-100 leading-snug">
             {article.title || '无标题'}
           </h1>
           
@@ -84,7 +84,7 @@ export default async function ArticlePage({ params }: PageProps) {
           />
         ) : (
           /* Single column view */
-          <div className="bg-white rounded-2xl border border-gray-200 p-8">
+          <div className="bg-gray-950 rounded-2xl border border-gray-700 p-8">
             <div className="prose prose-gray max-w-none text-base leading-relaxed">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}

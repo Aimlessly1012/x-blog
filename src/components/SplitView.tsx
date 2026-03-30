@@ -58,10 +58,10 @@ export default function SplitView({ originalContent, translatedContent }: SplitV
   return (
     <div className="grid md:grid-cols-2 gap-6 min-h-[500px]">
       {/* Left: Original */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 bg-gray-50">
+      <div className="bg-gray-950 rounded-2xl border border-gray-700 overflow-hidden flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-800 bg-gray-900">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-700">English</span>
+            <span className="text-sm font-semibold text-gray-300">English</span>
             <span className="text-gray-300">·</span>
             <span className="text-xs text-gray-400">原文</span>
           </div>
@@ -82,8 +82,8 @@ export default function SplitView({ originalContent, translatedContent }: SplitV
       </div>
 
       {/* Right: Translation */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 bg-pink-50">
+      <div className="bg-gray-950 rounded-2xl border border-gray-700 overflow-hidden flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-800 bg-pink-50">
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-pink-700">中文</span>
             <span className="text-pink-300">·</span>

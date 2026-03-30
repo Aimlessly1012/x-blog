@@ -15,7 +15,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm shadow-gray-100">
+    <nav className="border-b border-gray-700 bg-gray-950/80 backdrop-blur-md sticky top-0 z-50 shadow-sm shadow-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left: Logo + Navigation Links */}
@@ -44,7 +44,7 @@ export default function Navbar() {
                 className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                   isActive('/')
                     ? 'text-pink-600 bg-pink-50'
-                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800'
                 }`}
               >
                 {isActive('/') ? (
@@ -63,7 +63,7 @@ export default function Navbar() {
                 className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                   isActive('/authors')
                     ? 'text-pink-600 bg-pink-50'
-                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800'
                 }`}
               >
                 {isActive('/authors') ? (
@@ -82,7 +82,7 @@ export default function Navbar() {
                 className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                   isActive('/skills')
                     ? 'text-pink-600 bg-pink-50'
-                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800'
                 }`}
               >
                 {isActive('/skills') ? (
@@ -101,7 +101,7 @@ export default function Navbar() {
                 className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 ${
                   isActive('/articles')
                     ? 'text-pink-600 bg-pink-50'
-                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                    : 'text-gray-500 hover:text-gray-200 hover:bg-gray-800'
                 }`}
               >
                 {isActive('/articles') ? (

@@ -72,7 +72,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Architecture': 'bg-indigo-100 text-indigo-700',
   'Security': 'bg-red-100 text-red-700',
   'API': 'bg-teal-100 text-teal-700',
-  'Standards': 'bg-gray-100 text-gray-700',
+  'Standards': 'bg-gray-800 text-gray-300',
   'Documentation': 'bg-amber-100 text-amber-700',
   'Content': 'bg-rose-100 text-rose-700',
   'Process': 'bg-violet-100 text-violet-700',
@@ -83,21 +83,21 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 function getCategoryClass(category: string) {
-  return CATEGORY_COLORS[category] || 'bg-gray-100 text-gray-600'
+  return CATEGORY_COLORS[category] || 'bg-gray-800 text-gray-400'
 }
 
 function SkillCard({ skill, isSelected, onClick }: { skill: typeof SKILLS_DATA[0]; isSelected: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full p-4 text-left border-b border-gray-100 transition-all ${
+      className={`w-full p-4 text-left border-b border-gray-800 transition-all ${
         isSelected 
           ? 'bg-pink-50 border-l-4 border-l-pink-500' 
-          : 'hover:bg-gray-50'
+          : 'hover:bg-gray-900'
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className={`font-medium text-sm ${isSelected ? 'text-pink-700' : 'text-gray-900'}`}>
+        <span className={`font-medium text-sm ${isSelected ? 'text-pink-700' : 'text-gray-100'}`}>
           {skill.name}
         </span>
         <span className={`px-2 py-0.5 rounded-full text-xs ${getCategoryClass(skill.category)}`}>
@@ -111,14 +111,14 @@ function SkillCard({ skill, isSelected, onClick }: { skill: typeof SKILLS_DATA[0
 
 function SkillDetail({ skill }: { skill: typeof SKILLS_DATA[0] }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8">
+    <div className="bg-gray-950 rounded-2xl border border-gray-700 p-8">
       {/* Header */}
       <div className="flex items-start gap-4 mb-6">
         <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
           <SparklesIcon className="w-7 h-7 text-pink-600" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{skill.name}</h2>
+          <h2 className="text-2xl font-bold text-gray-100 mb-2">{skill.name}</h2>
           <span className={`px-3 py-1 rounded-full text-sm ${getCategoryClass(skill.category)}`}>
             {skill.category}
           </span>
@@ -126,23 +126,23 @@ function SkillDetail({ skill }: { skill: typeof SKILLS_DATA[0] }) {
       </div>
 
       {/* Description */}
-      <p className="text-gray-600 text-lg leading-relaxed mb-8">{skill.description}</p>
+      <p className="text-gray-400 text-lg leading-relaxed mb-8">{skill.description}</p>
 
       {/* Info Cards */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
           <div className="flex items-center gap-2 mb-2">
             <BookOpenIcon className="w-5 h-5 text-blue-500" />
-            <span className="font-medium text-gray-700">分类</span>
+            <span className="font-medium text-gray-300">分类</span>
           </div>
           <span className={`px-2 py-1 rounded-lg text-sm ${getCategoryClass(skill.category)}`}>
             {skill.category}
           </span>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
           <div className="flex items-center gap-2 mb-2">
             <WrenchIcon className="w-5 h-5 text-green-500" />
-            <span className="font-medium text-gray-700">使用方式</span>
+            <span className="font-medium text-gray-300">使用方式</span>
           </div>
           <code className="text-sm text-pink-600 font-mono">/skill {skill.name}</code>
         </div>
@@ -150,20 +150,20 @@ function SkillDetail({ skill }: { skill: typeof SKILLS_DATA[0] }) {
 
       {/* How to Use */}
       <div className="mb-8">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-gray-100 mb-4">
           <RocketLaunchIcon className="w-5 h-5 text-pink-500" />
           如何使用
         </h3>
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 space-y-4">
+        <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
           <div>
-            <h4 className="text-gray-700 font-medium mb-2">1. 安装 Skill</h4>
-            <code className="block bg-white rounded-lg p-3 text-sm text-pink-600 font-mono border border-gray-200">
+            <h4 className="text-gray-300 font-medium mb-2">1. 安装 Skill</h4>
+            <code className="block bg-gray-950 rounded-lg p-3 text-sm text-pink-600 font-mono border border-gray-700">
               skillhub install {skill.name}
             </code>
           </div>
           <div>
-            <h4 className="text-gray-700 font-medium mb-2">2. 激活 Skill</h4>
-            <code className="block bg-white rounded-lg p-3 text-sm text-pink-600 font-mono border border-gray-200">
+            <h4 className="text-gray-300 font-medium mb-2">2. 激活 Skill</h4>
+            <code className="block bg-gray-950 rounded-lg p-3 text-sm text-pink-600 font-mono border border-gray-700">
               /skill {skill.name}
             </code>
           </div>
@@ -200,7 +200,7 @@ export default function SkillsPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-900">
         <Navbar />
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="animate-spin w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full" />
@@ -210,15 +210,15 @@ export default function SkillsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <Navbar />
       
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-gray-950 border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center gap-3 mb-2">
             <SparklesIcon className="w-7 h-7 text-pink-500" />
-            <h1 className="text-2xl font-bold text-gray-900">Skill 相关</h1>
+            <h1 className="text-2xl font-bold text-gray-100">Skill 相关</h1>
           </div>
           <p className="text-gray-500 text-sm">
             {SKILLS_DATA.length} 个精选 Skills，持续更新
@@ -228,9 +228,9 @@ export default function SkillsPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+        <div className="bg-gray-950 rounded-2xl border border-gray-700 overflow-hidden">
           {/* Search */}
-          <div className="p-4 border-b border-gray-100">
+          <div className="p-4 border-b border-gray-800">
             <div className="relative">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
@@ -246,7 +246,7 @@ export default function SkillsPage() {
           {/* Skills Grid */}
           <div className="grid md:grid-cols-2 gap-6 p-6">
             {/* Left - Skills List */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden max-h-[60vh] overflow-y-auto">
+            <div className="border border-gray-700 rounded-xl overflow-hidden max-h-[60vh] overflow-y-auto">
               {filteredSkills.map((skill) => (
                 <SkillCard
                   key={skill.name}
