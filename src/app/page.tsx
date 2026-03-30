@@ -1,10 +1,8 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
-import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { ArrowRightIcon, TrashIcon, SparklesIcon, ClockIcon, MagnifyingGlassIcon, FunnelIcon, TagIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { ArrowRightIcon, TrashIcon, SparklesIcon, ClockIcon, MagnifyingGlassIcon, TagIcon } from '@heroicons/react/24/outline'
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 import { BookmarkIcon as BookmarkOutlineIcon } from '@heroicons/react/24/outline'
 import Navbar from '@/components/Navbar'
@@ -269,8 +267,6 @@ function MediumCard({ article, onDelete, isDeleting }: { article: Article, onDel
 }
 
 export default function HomePage() {
-  const router = useRouter()
-  const { data: session, status } = useSession()
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -279,30 +275,16 @@ export default function HomePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [mounted, setMounted] = useState(false)
 
-  // 获取用户状态
-  const userStatus = (session?.user as any)?.status
-
-  // Hydration 保护 - 客户端渲染标记
+  // 客户端渲染标记
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // 认证检查 + 文章加载
+  // 加载文章
   useEffect(() => {
-    if (!mounted || status === 'loading') return
-    
-    // 未登录 → 跳转登录页
-    if (status === 'unauthenticated') {
-      router.push('/login')
-      return
-    }
-    
-    // 已登录但状态是 approved → 加载文章
-    if (status === 'authenticated' && userStatus === 'approved') {
-      fetchArticles()
-    }
-    // pending/rejected 用户不加载文章，由下面的 UI 处理
-  }, [mounted, status, userStatus, router])
+    if (!mounted) return
+    fetchArticles()
+  }, [mounted])
 
   async function fetchArticles() {
     try {
@@ -318,8 +300,8 @@ export default function HomePage() {
     }
   }
 
-  // 服务端渲染或加载中 - 显示骨架屏（避免 hydration 错误）
-  if (!mounted || status === 'loading' || !userStatus) {
+  // 服务端渲染时显示骨架屏（避免 hydration 错误）
+  if (!mounted) {
     return (
       <>
         <Navbar />
@@ -335,108 +317,22 @@ export default function HomePage() {
     )
   }
 
-  // 待审核用户显示等待页面
-  if (userStatus === 'pending') {
+  // 加载中显示骨架屏
+  if (loading) {
     return (
       <>
         <Navbar />
         <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gray-900 border border-gray-800 rounded-3xl p-12 text-center">
-              {/* 动画图标 */}
-              <div className="w-20 h-20 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center">
-                <ClockIcon className="w-10 h-10 text-yellow-400 animate-pulse" />
-              </div>
-
-              {/* 标题 */}
-              <h1 className="text-3xl font-bold text-gray-100 mb-4">
-                账号等待审核
-              </h1>
-
-              {/* 说明 */}
-              <div className="space-y-4 text-gray-400 mb-8">
-                <p className="text-lg">
-                  您的账号正在等待管理员审核
-                </p>
-                <p className="text-sm">
-                  审核通过后，您将可以浏览所有文章内容。<br/>
-                  请耐心等待，或联系管理员获取帮助。
-                </p>
-              </div>
-
-              {/* 状态卡片 */}
-              <div className="bg-gray-800/50 rounded-2xl p-6 mb-8">
-                <div className="flex items-center justify-center gap-3 mb-3">
-                  <span className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></span>
-                  <span className="text-yellow-400 font-semibold">等待审核中</span>
-                </div>
-                <p className="text-gray-500 text-sm">
-                  当前账号: {session?.user?.email || session?.user?.name || '未知用户'}
-                </p>
-              </div>
-
-              {/* 退出登录按钮 */}
-              <button
-                onClick={() => signOut({ callbackUrl: '/login' })}
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-all font-medium"
-              >
-                退出登录
-              </button>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <ArticleCardSkeleton size="large" />
+              <ArticleCardSkeleton size="medium" />
             </div>
           </div>
         </div>
       </>
     )
   }
-
-  // 已拒绝用户显示拒绝页面
-  if (userStatus === 'rejected') {
-    return (
-      <>
-        <Navbar />
-        <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-12">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gray-900 border border-red-900/50 rounded-3xl p-12 text-center">
-              {/* 动画图标 */}
-              <div className="w-20 h-20 mx-auto mb-6 bg-red-500/10 rounded-full flex items-center justify-center">
-                <XCircleIcon className="w-10 h-10 text-red-400" />
-              </div>
-
-              {/* 标题 */}
-              <h1 className="text-3xl font-bold text-gray-100 mb-4">
-                账号已被拒绝
-              </h1>
-
-              {/* 说明 */}
-              <div className="space-y-4 text-gray-400 mb-8">
-                <p className="text-lg">
-                  您的账号审核未通过
-                </p>
-                <p className="text-sm">
-                  很抱歉，您的账号访问请求已被拒绝。<br/>
-                  如有疑问，请联系管理员。
-                </p>
-              </div>
-
-              {/* 退出登录按钮 */}
-              <button
-                onClick={() => signOut({ callbackUrl: '/login' })}
-                className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition-all font-medium"
-              >
-                退出登录
-              </button>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  }
-
-  useEffect(() => {
-    if (status === 'authenticated' && userStatus === 'approved') {
-      fetchArticles()
-    }
-  }, [status, userStatus])
 
   async function handleDelete(id: string) {
     if (!confirm('确定要删除这篇文章吗？')) return
